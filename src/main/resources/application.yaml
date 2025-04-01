@@ -1,0 +1,35 @@
+spring:
+  profiles:
+    active: ${spring.profiles.default:local}
+
+server:
+  port: 8080
+  error:
+    whitelabel:
+      enabled: false
+  tomcat:
+    use-relative-redirects: true
+
+kakao:
+  client-id: b6394be5274a953f6b47646f20f6d44e
+  client-secret: 0HRvhTU5jvwhvJpuEWv8hHwdEHQ0UAoi
+  redirect-uri: http://localhost:3000/login
+
+jwt:
+  secret: 63Yjds7afksdq9204gksd12fsfksdnvabqw23JKsdfnvlkdjf02sldkfnsdkljksdFklsdF3209uqwesadgf12
+  expiration: 604800000 # 7일 (ms)
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui
+    #    disable-swagger-default-url: true
+    display-request-duration: true
+    tags-sorter: alpha
+    operations-sorter: alpha
+    doc-expansion: none
+    urls-primary-name: TEST API
+    persist-authorization: true
+    query-config-enabled: true
+    syntax-highlight:
+      theme: nord
+  pre-loading-enabled: true
