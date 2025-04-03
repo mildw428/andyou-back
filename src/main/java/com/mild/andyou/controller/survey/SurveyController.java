@@ -34,6 +34,11 @@ public class SurveyController {
         return ResponseEntity.ok(surveyService.getAllSurveys());
     }
 
+    @GetMapping("/my")
+    public ResponseEntity<List<SurveySearchRs>> getMySurveys() {
+        return ResponseEntity.ok(surveyService.getMySurveys());
+    }
+
     // ID로 설문 상세 조회
     @GetMapping("/{id}")
     public ResponseEntity<SurveyRs> getSurveyById(@PathVariable Long id) {

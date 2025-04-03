@@ -80,6 +80,16 @@ public class SurveyService {
                 .collect(Collectors.toList());
     }
 
+    public List<SurveySearchRs> getMySurveys() {
+        if(UserContextHolder.userId() == null) {
+            throw new RuntimeException();
+        }
+        List<Survey> surveys = surveyRepository.findByCreatedBy_Id(UserContextHolder.userId());
+        return surveys.stream()
+                .map(SurveySearchRs::convertToSurveyRs)
+                .collect(Collectors.toList());
+    }
+
     public SurveyRs getSurveyById(Long id) {
         Survey survey = surveyRepository.findById(id).orElseThrow();
 
