@@ -10,4 +10,6 @@ import java.util.Optional;
 @Repository
 public interface SurveyResponseRepository extends JpaRepository<SurveyResponse, Long> {
     Optional<SurveyResponse> findBySurveyAndUser(Survey survey, User user);
+
+    Optional<SurveyResponse> findFirstBySurvey(Survey survey);
 }

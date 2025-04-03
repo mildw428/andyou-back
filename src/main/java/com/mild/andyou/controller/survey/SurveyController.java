@@ -28,6 +28,10 @@ public class SurveyController {
         return ResponseEntity.ok(surveyService.saveSurvey(rq));
     }
 
+    @PatchMapping("/{id}")
+    public ResponseEntity<SurveySaveRs> updateSurvey(@PathVariable Long id, @RequestBody SurveySaveRq rq) {
+        return ResponseEntity.ok(surveyService.updateSurvey(id, rq));
+    }
     // 모든 설문 조회
     @GetMapping
     public ResponseEntity<List<SurveySearchRs>> getAllSurveys() {

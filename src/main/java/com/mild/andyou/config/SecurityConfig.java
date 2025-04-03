@@ -57,7 +57,7 @@ public class SecurityConfig {
                 "https://golajo.com",
                 "http://www.golajo.com",
                 "https://www.golajo.com"));
-        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
 //        config.setAllowCredentials(true); // 프론트에서 credentials: 'include' 사용 시 필수
         config.setMaxAge(3600L);

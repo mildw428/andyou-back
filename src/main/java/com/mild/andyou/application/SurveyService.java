@@ -73,6 +73,37 @@ public class SurveyService {
         return new SurveySaveRs(survey.getId());
     }
 
+    @Transactional
+    public SurveySaveRs updateSurvey(Long id, SurveySaveRq rq) {
+        Survey survey = surveyRepository.findById(id).orElseThrow();
+        Optional<SurveyResponse> surveyResponseOpt = responseRepository.findFirstBySurvey(survey);
+
+        if(!survey.getCreatedBy().getId().equals(UserContextHolder.userId()) || surveyResponseOpt.isPresent()) {
+            throw new RuntimeException();
+        }
+
+        List<SurveyOption> surveyOptions = rq.getOptions().stream().map(o -> SurveyOption.craete(
+                o.getText(),
+                o.getContentType(),
+                o.getContent()
+        )).collect(Collectors.toList());
+
+        survey.update(
+                rq.getTitle(),
+                rq.getDescription(),
+                rq.getThumbnail(),
+                rq.getContentType(),
+                rq.getContent()
+        );
+        survey.setOptions(surveyOptions);
+
+        List<String> fileNames = rq.getFileNames();
+        List<SurveyContent> surveyContents = surveyContentRepository.findAllByFileNameIn(fileNames);
+        surveyContents.forEach(c->c.updateStatus(survey));
+
+        return new SurveySaveRs(survey.getId());
+    }
+
     public List<SurveySearchRs> getAllSurveys() {
         List<Survey> surveys = surveyRepository.findAll();
         return surveys.stream()

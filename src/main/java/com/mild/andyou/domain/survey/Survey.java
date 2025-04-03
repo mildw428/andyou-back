@@ -44,7 +44,7 @@ public class Survey {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
-    @OneToMany(mappedBy = "survey", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "survey", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<SurveyOption> options = new ArrayList<>();
 
     public Survey(String title, String description, String thumbnail, ContentVo contentVo, User createdBy) {
@@ -58,6 +58,13 @@ public class Survey {
     public static Survey create(String title, String description, String thumbnailUrl, ContentType contentType, String contentUrl) {
         User user = new User(UserContextHolder.userId());
         return new Survey(title, description, thumbnailUrl, new ContentVo(contentType, contentUrl), user);
+    }
+
+    public void update(String title, String description, String thumbnail, ContentType contentType, String content) {
+        this.title = title;
+        this.description = description;
+        this.thumbnail = thumbnail;
+        this.contentVo = new ContentVo(contentType, content);
     }
 
     public Optional<SurveyOption> getOption(Long optionId) {
