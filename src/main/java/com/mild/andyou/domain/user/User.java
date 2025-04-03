@@ -43,6 +43,10 @@ public class User {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
+    public void updateNickname(String nickname) {
+        this.nickname = nickname;
+    }
+
     public enum SocialType {
         KAKAO, NAVER
     }

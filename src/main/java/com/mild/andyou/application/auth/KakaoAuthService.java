@@ -4,7 +4,7 @@ import com.mild.andyou.application.auth.dto.KakaoTokenResponse;
 import com.mild.andyou.application.auth.dto.KakaoUserResponse;
 import com.mild.andyou.config.properties.JwtProperties;
 import com.mild.andyou.config.properties.KakaoProperties;
-import com.mild.andyou.controller.auth.KakaoLoginRq;
+import com.mild.andyou.controller.auth.rqrs.KakaoLoginRq;
 import com.mild.andyou.controller.user.rqrs.KakaoRefreshRq;
 import com.mild.andyou.controller.user.rqrs.TokenRs;
 import com.mild.andyou.domain.user.User;
@@ -13,7 +13,6 @@ import com.mild.andyou.utils.JwtTokenUtils;
 import com.mild.andyou.utils.TokenInfo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,11 +20,7 @@ import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
-import javax.naming.AuthenticationException;
-import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.Optional;
-import java.util.UUID;
 
 @Transactional(readOnly = true)
 @Slf4j
@@ -57,11 +52,15 @@ public class KakaoAuthService {
         User user = userRepository.findBySocialTypeAndSocialId(User.SocialType.KAKAO, userResponse.getId())
                 .orElseGet(() -> userRepository.save(new User(User.SocialType.KAKAO, userResponse.getId())));
 
+        if(user.getNickname().isBlank()) {
+            user.updateNickname("사용자"+user.getId());
+        }
+
         TokenInfo tokenInfo = JwtTokenUtils.createToken(jwtProperties.getSecret(), user.getId().toString());
 
         user.updateRefresh(tokenInfo.getRefreshToken(), tokenInfo.getRefreshTokenExp());
 
-        return new TokenRs(tokenInfo);
+        return new TokenRs(tokenInfo, user.getNickname());
     }
 
     private KakaoTokenResponse getKakaoTokenResponse(KakaoLoginRq rq) {
@@ -119,7 +118,7 @@ public class KakaoAuthService {
         TokenInfo tokenInfo = JwtTokenUtils.createToken(jwtProperties.getSecret(), user.getId().toString());
         user.updateRefresh(tokenInfo.getRefreshToken(), tokenInfo.getRefreshTokenExp());
 
-        return new TokenRs(tokenInfo);
+        return new TokenRs(tokenInfo, user.getNickname());
 
     }
 }

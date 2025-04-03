@@ -2,7 +2,7 @@ package com.mild.andyou.controller.auth;
 
 
 import com.mild.andyou.application.auth.KakaoAuthService;
-import com.mild.andyou.controller.survey.rqrs.SurveyRs;
+import com.mild.andyou.controller.auth.rqrs.KakaoLoginRq;
 import com.mild.andyou.controller.user.rqrs.KakaoRefreshRq;
 import com.mild.andyou.controller.user.rqrs.TokenRs;
 import lombok.RequiredArgsConstructor;
@@ -13,8 +13,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-
 
 @RestController
 @RequestMapping("/api/auth")
@@ -24,7 +22,7 @@ public class AuthController {
     private final KakaoAuthService kakaoAuthService;
 
     @PostMapping("/kakao")
-    public ResponseEntity<TokenRs>  kakaoLogin(@RequestBody KakaoLoginRq rq) {
+    public ResponseEntity<TokenRs> kakaoLogin(@RequestBody KakaoLoginRq rq) {
         return ResponseEntity.ok(kakaoAuthService.kakaoLogin(rq));
     }
 
