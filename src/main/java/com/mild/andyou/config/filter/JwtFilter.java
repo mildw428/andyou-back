@@ -1,5 +1,6 @@
 package com.mild.andyou.config.filter;
 
+import com.mild.andyou.config.properties.JwtProperties;
 import com.mild.andyou.domain.user.User;
 import com.mild.andyou.domain.user.UserRepository;
 import com.mild.andyou.utils.JwtTokenUtils;
@@ -22,7 +23,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class JwtFilter extends OncePerRequestFilter {
 
-    private final String jwtSecret;
+    private final JwtProperties jwtProperties;
     private final UserRepository userRepository;
 
     @Override
@@ -38,12 +39,12 @@ public class JwtFilter extends OncePerRequestFilter {
         }
 
         if(token != null) {
-            if(JwtTokenUtils.isTokenExpired(jwtSecret, token)) {
+            if(JwtTokenUtils.isTokenExpired(jwtProperties.getSecret(), token)) {
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                 response.getWriter().write("Token has expired");
                 return;
             }
-            String id = JwtTokenUtils.getAudience(jwtSecret, token);
+            String id = JwtTokenUtils.getAudience(jwtProperties.getSecret(), token);
             Optional<User> userOpt = userRepository.findById(Long.valueOf(id));
             userOpt.ifPresent(user -> UserContextHolder.setUserContext(new UserContext(user)));
         }

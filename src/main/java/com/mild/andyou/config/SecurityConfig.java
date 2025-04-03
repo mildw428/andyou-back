@@ -1,6 +1,7 @@
 package com.mild.andyou.config;
 
 import com.mild.andyou.config.filter.JwtFilter;
+import com.mild.andyou.config.properties.JwtProperties;
 import com.mild.andyou.domain.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,8 +23,7 @@ public class SecurityConfig {
 
     private final ConfigurableEnvironment environment;
 
-    @Value("${jwt.secret}")
-    private String jwtSecret;
+    private final JwtProperties jwtProperties;
     private final UserRepository userRepository;
 
     @Bean
@@ -43,7 +43,7 @@ public class SecurityConfig {
                         ).permitAll()
                         .anyRequest().permitAll()
                 )
-                .addFilterBefore(new JwtFilter(jwtSecret, userRepository), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(new JwtFilter(jwtProperties, userRepository), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
@@ -52,7 +52,11 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
 
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("http://localhost:3000"));
+        config.setAllowedOrigins(List.of("http://localhost:3000",
+                "http://golrajo.com",
+                "https://golajo.com",
+                "http://www.golajo.com",
+                "https://www.golajo.com"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
 //        config.setAllowCredentials(true); // 프론트에서 credentials: 'include' 사용 시 필수

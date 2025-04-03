@@ -2,6 +2,8 @@ package com.mild.andyou.application.auth;
 
 import com.mild.andyou.application.auth.dto.KakaoTokenResponse;
 import com.mild.andyou.application.auth.dto.KakaoUserResponse;
+import com.mild.andyou.config.properties.JwtProperties;
+import com.mild.andyou.config.properties.KakaoProperties;
 import com.mild.andyou.controller.auth.KakaoLoginRq;
 import com.mild.andyou.controller.user.rqrs.KakaoRefreshRq;
 import com.mild.andyou.controller.user.rqrs.TokenRs;
@@ -31,17 +33,8 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class KakaoAuthService {
 
-    @Value("${kakao.client-id}")
-    private String clientId;
-
-    @Value("${kakao.client-secret}")
-    private String clientSecret;
-
-    @Value("${kakao.redirect-uri}")
-    private String redirectUri;
-
-    @Value("${jwt.secret}")
-    private String jwtSecret;
+    private final KakaoProperties kakaoProperties;
+    private final JwtProperties jwtProperties;
 
     private final WebClient webClient = WebClient.create();
     private final UserRepository userRepository;
@@ -64,7 +57,7 @@ public class KakaoAuthService {
         User user = userRepository.findBySocialTypeAndSocialId(User.SocialType.KAKAO, userResponse.getId())
                 .orElseGet(() -> userRepository.save(new User(User.SocialType.KAKAO, userResponse.getId())));
 
-        TokenInfo tokenInfo = JwtTokenUtils.createToken(jwtSecret, user.getId().toString());
+        TokenInfo tokenInfo = JwtTokenUtils.createToken(jwtProperties.getSecret(), user.getId().toString());
 
         user.updateRefresh(tokenInfo.getRefreshToken(), tokenInfo.getRefreshTokenExp());
 
@@ -77,9 +70,9 @@ public class KakaoAuthService {
                 .header("Content-Type", "application/x-www-form-urlencoded;charset=utf-8")
                 .body(BodyInserters
                         .fromFormData("grant_type", "authorization_code")
-                        .with("client_id", clientId)
-                        .with("client_secret", clientSecret)
-                        .with("redirect_uri", redirectUri)
+                        .with("client_id", kakaoProperties.getClientId())
+                        .with("client_secret", kakaoProperties.getClientSecret())
+                        .with("redirect_uri", kakaoProperties.getRedirectUri())
                         .with("code", rq.getCode())
                 )
                 .retrieve()
@@ -123,7 +116,7 @@ public class KakaoAuthService {
             return null;
         }
 
-        TokenInfo tokenInfo = JwtTokenUtils.createToken(jwtSecret, user.getId().toString());
+        TokenInfo tokenInfo = JwtTokenUtils.createToken(jwtProperties.getSecret(), user.getId().toString());
         user.updateRefresh(tokenInfo.getRefreshToken(), tokenInfo.getRefreshTokenExp());
 
         return new TokenRs(tokenInfo);

@@ -30,7 +30,9 @@ public class SurveyRs {
                         option.getId(),
                         option.getText(),
                         option.getContentVo().getContentType(),
-                        S3FilePath.getSurveyContentPath(option.getContentVo().getContent()),
+                        option.getContentVo().getContentType() == ContentType.IMAGE ?
+                                S3FilePath.getSurveyContentPath(option.getContentVo().getContent()) :
+                                option.getContentVo().getContent(),
                         optionId == null ? 0 : option.getResponses().size()))
                 .collect(Collectors.toList());
 
@@ -39,7 +41,9 @@ public class SurveyRs {
                 survey.getTitle(),
                 survey.getDescription(),
                 survey.getContentVo().getContentType(),
-                S3FilePath.getSurveyContentPath(survey.getContentVo().getContent()),
+                survey.getContentVo().getContentType() == ContentType.IMAGE ?
+                        S3FilePath.getSurveyContentPath(survey.getContentVo().getContent()) :
+                        survey.getContentVo().getContent(),
                 optionId,
                 optionRsList
         );

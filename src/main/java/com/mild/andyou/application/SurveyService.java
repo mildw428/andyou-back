@@ -50,7 +50,6 @@ public class SurveyService {
 
     @Transactional
     public SurveySaveRs saveSurvey(SurveySaveRq rq) {
-
         Survey survey = Survey.create(rq.getTitle(),
                 rq.getDescription(),
                 rq.getThumbnail(),
