@@ -7,9 +7,12 @@ import com.mild.andyou.domain.survey.*;
 import com.mild.andyou.domain.user.User;
 import com.mild.andyou.domain.user.UserRepository;
 import com.mild.andyou.utils.Delimiter;
+import com.mild.andyou.utils.PageRq;
 import com.mild.andyou.utils.s3.S3FilePath;
 import com.mild.andyou.utils.s3.S3Utils;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -104,21 +107,12 @@ public class SurveyService {
         return new SurveySaveRs(survey.getId());
     }
 
-    public List<SurveySearchRs> getAllSurveys() {
-        List<Survey> surveys = surveyRepository.findAllByOrderByIdDesc();
-        return surveys.stream()
-                .map(SurveySearchRs::convertToSurveyRs)
-                .collect(Collectors.toList());
-    }
-
-    public List<SurveySearchRs> getMySurveys() {
-        if(UserContextHolder.userId() == null) {
+    public Page<SurveySearchRs> getMySurveys(PageRq pageRq) {
+        if (UserContextHolder.userId() == null) {
             throw new RuntimeException();
         }
-        List<Survey> surveys = surveyRepository.findByCreatedBy_Id(UserContextHolder.userId());
-        return surveys.stream()
-                .map(SurveySearchRs::convertToSurveyRs)
-                .collect(Collectors.toList());
+        Page<Survey> surveys = surveyRepository.findByCreatedBy(UserContextHolder.userId(), pageRq.toPageable());
+        return surveys.map(SurveySearchRs::convertToSurveyRs);
     }
 
     public SurveyRs getSurveyById(Long id) {
@@ -134,15 +128,10 @@ public class SurveyService {
         return SurveyRs.convertToSurveyRs(survey, selectedId);
     }
 
-    public List<SurveySearchRs> searchSurveys(String keyword) {
-        if (keyword == null || keyword.trim().isEmpty()) {
-            return getAllSurveys();
-        }
-        
-        List<Survey> surveys = surveyRepository.findByTitleContainingIgnoreCase(keyword);
-        return surveys.stream()
-                .map(SurveySearchRs::convertToSurveyRs)
-                .collect(Collectors.toList());
+    public Page<SurveySearchRs> searchSurveys(String keyword, PageRq pageRq) {
+
+        Page<Survey> surveys = surveyRepository.findBySearch(keyword, pageRq.toPageable());
+        return surveys.map(SurveySearchRs::convertToSurveyRs);
     }
 
     @Transactional
