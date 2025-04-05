@@ -1,3 +1,6 @@
+on:
+  workflow_dispatch:
+  
 name: Spring Boot CI/CD
 
 on:
