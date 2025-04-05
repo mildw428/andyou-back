@@ -1,5 +1,6 @@
 package com.mild.andyou.domain.survey;
 
+import com.querydsl.core.Tuple;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Path;
@@ -15,8 +16,11 @@ import org.springframework.data.domain.Pageable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import static com.mild.andyou.domain.survey.QSurvey.survey;
+import static com.mild.andyou.domain.survey.QSurveyResponse.surveyResponse;
 
 public class SurveyRepositoryDslImpl extends QuerydslRepositorySupport implements SurveyRepositoryDsl {
 
@@ -59,6 +63,25 @@ public class SurveyRepositoryDslImpl extends QuerydslRepositorySupport implement
 
         // Page 객체 생성
         return new PageImpl<>(content, pageable, total);
+    }
+
+    @Override
+    public Map<Long, Long> countMap(List<Survey> surveys) {
+        List<Tuple> result = from(survey)
+                .leftJoin(surveyResponse).on(surveyResponse.survey.eq(survey))
+                .where(survey.in(surveys))
+                .groupBy(survey.id)
+                .select(
+                        survey.id,
+                        surveyResponse.countDistinct().coalesce(0L)
+                )
+                .fetch();
+
+        return result.stream()
+                .collect(Collectors.toMap(
+                        tuple -> tuple.get(0, Long.class),
+                        tuple -> tuple.get(1, Long.class)
+                ));
     }
 
     private static BooleanExpression eqCreatedBy(Long userId) {

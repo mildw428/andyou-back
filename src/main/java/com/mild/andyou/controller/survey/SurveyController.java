@@ -1,7 +1,7 @@
 package com.mild.andyou.controller.survey;
 
-import com.mild.andyou.application.CommentService;
-import com.mild.andyou.application.SurveyService;
+import com.mild.andyou.application.comment.CommentService;
+import com.mild.andyou.application.survey.SurveyService;
 import com.mild.andyou.controller.survey.rqrs.*;
 import com.mild.andyou.utils.PageResponse;
 import com.mild.andyou.utils.PageRq;

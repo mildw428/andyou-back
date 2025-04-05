@@ -1,4 +1,4 @@
-package com.mild.andyou.application;
+package com.mild.andyou.application.survey;
 
 import com.mild.andyou.config.filter.UserContextHolder;
 import com.mild.andyou.config.properties.BucketProperties;
@@ -12,7 +12,6 @@ import com.mild.andyou.utils.s3.S3FilePath;
 import com.mild.andyou.utils.s3.S3Utils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -29,7 +28,7 @@ public class SurveyService {
     private final SurveyRepository surveyRepository;
     private final SurveyContentRepository surveyContentRepository;
     private final UserRepository userRepository;
-    private final SurveyResponseRepository responseRepository;
+    private final SurveyResponseRepository surveyResponseRepository;
 
     @Transactional
     public ContentSaveRs saveContent(MultipartFile file) {
@@ -79,7 +78,7 @@ public class SurveyService {
     @Transactional
     public SurveySaveRs updateSurvey(Long id, SurveySaveRq rq) {
         Survey survey = surveyRepository.findById(id).orElseThrow();
-        Optional<SurveyResponse> surveyResponseOpt = responseRepository.findFirstBySurvey(survey);
+        Optional<SurveyResponse> surveyResponseOpt = surveyResponseRepository.findFirstBySurvey(survey);
 
         if(!survey.getCreatedBy().getId().equals(UserContextHolder.userId()) || surveyResponseOpt.isPresent()) {
             throw new RuntimeException();
@@ -112,7 +111,9 @@ public class SurveyService {
             throw new RuntimeException();
         }
         Page<Survey> surveys = surveyRepository.findByCreatedBy(UserContextHolder.userId(), pageRq.toPageable());
-        return surveys.map(SurveySearchRs::convertToSurveyRs);
+        Map<Long, Long> countMap = surveyRepository.countMap(surveys.getContent());
+
+        return surveys.map(s-> SurveySearchRs.convertToSurveyRs(s, countMap.get(s.getId())));
     }
 
     public SurveyRs getSurveyById(Long id) {
@@ -121,7 +122,7 @@ public class SurveyService {
         Optional<SurveyResponse> responseOpt = Optional.empty();
         if(UserContextHolder.userId() != null) {
             User user = userRepository.findById(UserContextHolder.userId()).orElseThrow();
-            responseOpt = responseRepository.findBySurveyAndUser(survey, user);
+            responseOpt = surveyResponseRepository.findBySurveyAndUser(survey, user);
         }
 
         Long selectedId = responseOpt.map(surveyResponse -> surveyResponse.getOption().getId()).orElse(null);
@@ -131,7 +132,9 @@ public class SurveyService {
     public Page<SurveySearchRs> searchSurveys(String keyword, PageRq pageRq) {
 
         Page<Survey> surveys = surveyRepository.findBySearch(keyword, pageRq.toPageable());
-        return surveys.map(SurveySearchRs::convertToSurveyRs);
+        Map<Long, Long> countMap = surveyRepository.countMap(surveys.getContent());
+
+        return surveys.map(s->SurveySearchRs.convertToSurveyRs(s, countMap.get(s.getId())));
     }
 
     @Transactional

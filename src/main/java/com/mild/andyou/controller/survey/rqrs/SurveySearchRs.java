@@ -19,9 +19,10 @@ public class SurveySearchRs {
     private Long id;
     private String title;
     private String thumbnailUrl;
+    private Long participantCount;
     private List<OptionRs> options = new ArrayList<>();
 
-    public static SurveySearchRs convertToSurveyRs(Survey survey) {
+    public static SurveySearchRs convertToSurveyRs(Survey survey, Long participantCount) {
         List<OptionRs> optionRsList = survey.getOptions().stream()
                 .map(option -> new OptionRs(
                         option.getId(),
@@ -35,6 +36,7 @@ public class SurveySearchRs {
                 survey.getId(),
                 survey.getTitle(),
                 S3FilePath.getSurveyContentPath(survey.getThumbnail()),
+                participantCount,
                 optionRsList
         );
     }
