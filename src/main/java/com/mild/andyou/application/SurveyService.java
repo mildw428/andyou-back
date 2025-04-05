@@ -105,7 +105,7 @@ public class SurveyService {
     }
 
     public List<SurveySearchRs> getAllSurveys() {
-        List<Survey> surveys = surveyRepository.findAll();
+        List<Survey> surveys = surveyRepository.findAllByOrderByIdDesc();
         return surveys.stream()
                 .map(SurveySearchRs::convertToSurveyRs)
                 .collect(Collectors.toList());

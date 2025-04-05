@@ -8,6 +8,8 @@ import java.util.List;
 
 @Repository
 public interface SurveyRepository extends JpaRepository<Survey, Long> {
+
+    List<Survey> findAllByOrderByIdDesc();
     List<Survey> findByTitleContainingIgnoreCase(String keyword);
 
     List<Survey> findByCreatedBy_Id(Long userId);
