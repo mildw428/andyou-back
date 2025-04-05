@@ -1,4 +1,4 @@
-package com.mild.andyou.application;
+package com.mild.andyou.application.comment;
 
 import com.mild.andyou.controller.survey.rqrs.CommentRs;
 import com.mild.andyou.domain.comment.Comment;

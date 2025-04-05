@@ -1,8 +1,11 @@
 package com.mild.andyou.controller.survey;
 
-import com.mild.andyou.application.CommentService;
-import com.mild.andyou.application.SurveyService;
+import com.mild.andyou.application.comment.CommentService;
+import com.mild.andyou.application.survey.SurveyService;
 import com.mild.andyou.controller.survey.rqrs.*;
+import com.mild.andyou.utils.PageResponse;
+import com.mild.andyou.utils.PageRq;
+import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -32,15 +35,10 @@ public class SurveyController {
     public ResponseEntity<SurveySaveRs> updateSurvey(@PathVariable Long id, @RequestBody SurveySaveRq rq) {
         return ResponseEntity.ok(surveyService.updateSurvey(id, rq));
     }
-    // 모든 설문 조회
-    @GetMapping
-    public ResponseEntity<List<SurveySearchRs>> getAllSurveys() {
-        return ResponseEntity.ok(surveyService.getAllSurveys());
-    }
 
     @GetMapping("/my")
-    public ResponseEntity<List<SurveySearchRs>> getMySurveys() {
-        return ResponseEntity.ok(surveyService.getMySurveys());
+    public ResponseEntity<PageResponse<SurveySearchRs>> getMySurveys(PageRq pageRq) {
+        return ResponseEntity.ok(PageResponse.from(surveyService.getMySurveys(pageRq)));
     }
 
     // ID로 설문 상세 조회
@@ -51,8 +49,8 @@ public class SurveyController {
 
     // 키워드로 설문 검색
     @GetMapping("/search")
-    public ResponseEntity<List<SurveySearchRs>> searchSurveys(@RequestParam String keyword) {
-        return ResponseEntity.ok(surveyService.searchSurveys(keyword));
+    public ResponseEntity<PageResponse<SurveySearchRs>> searchSurveys(@RequestParam @Nullable String keyword, PageRq pageRq) {
+        return ResponseEntity.ok(PageResponse.from(surveyService.searchSurveys(keyword, pageRq)));
     }
 
     // 설문 참여(투표)
