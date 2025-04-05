@@ -13,6 +13,7 @@ public enum FileExtension {
     JPG(".jpg", MediaType.IMAGE_JPEG),
     JPEG(".jpeg", MediaType.IMAGE_JPEG),
     GIF(".gif", MediaType.IMAGE_GIF),
+    WEBP(".webp", MediaType.parseMediaType("image/webp")),
     WEBM(".webm", MediaType.parseMediaType("video/webm")),
     MP4(".mp4", MediaType.parseMediaType("video/mp4")),
     TXT(".txt", MediaType.TEXT_PLAIN),
