@@ -63,9 +63,9 @@ public class SurveyController {
 
     // 댓글 작성
     @GetMapping("/{surveyId}/comments")
-    public ResponseEntity<List<CommentRs>> getComment(
-            @PathVariable Long surveyId) {
-        return ResponseEntity.ok(commentService.getComments(surveyId));
+    public ResponseEntity<PageResponse<CommentRs>> getComment(
+            @PathVariable Long surveyId, PageRq pageRq) {
+        return ResponseEntity.ok(PageResponse.from(commentService.getComments(surveyId, pageRq)));
     }
 
     // 댓글 작성
