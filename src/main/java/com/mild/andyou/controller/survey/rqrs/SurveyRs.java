@@ -2,6 +2,7 @@ package com.mild.andyou.controller.survey.rqrs;
 
 import com.mild.andyou.domain.survey.ContentType;
 import com.mild.andyou.domain.survey.Survey;
+import com.mild.andyou.domain.survey.Topic;
 import com.mild.andyou.utils.s3.S3FilePath;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -17,6 +18,7 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class SurveyRs {
     private Long id;
+    private Topic topic;
     private String title;
     private String description;
     private ContentType contentType;
@@ -38,6 +40,7 @@ public class SurveyRs {
 
         return new SurveyRs(
                 survey.getId(),
+                survey.getTopic(),
                 survey.getTitle(),
                 survey.getDescription(),
                 survey.getContentVo().getContentType(),

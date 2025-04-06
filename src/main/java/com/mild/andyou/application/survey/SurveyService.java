@@ -52,7 +52,9 @@ public class SurveyService {
 
     @Transactional
     public SurveySaveRs saveSurvey(SurveySaveRq rq) {
-        Survey survey = Survey.create(rq.getTitle(),
+        Survey survey = Survey.create(
+                rq.getTopic(),
+                rq.getTitle(),
                 rq.getDescription(),
                 rq.getThumbnail(),
                 rq.getContentType(),
