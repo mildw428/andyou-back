@@ -22,10 +22,13 @@ public class Survey {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 200)
+    @Enumerated(EnumType.STRING)
+    private Topic topic;
+
+    @Column(nullable = false, length = 50)
     private String title;
 
-    @Lob
+    @Column(length = 500)
     private String description;
 
     @Column(length = 500)
@@ -47,7 +50,8 @@ public class Survey {
     @OneToMany(mappedBy = "survey", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<SurveyOption> options = new ArrayList<>();
 
-    public Survey(String title, String description, String thumbnail, ContentVo contentVo, User createdBy) {
+    public Survey(Topic topic, String title, String description, String thumbnail, ContentVo contentVo, User createdBy) {
+        this.topic = topic;
         this.title = title;
         this.description = description;
         this.thumbnail = thumbnail;
@@ -55,9 +59,9 @@ public class Survey {
         this.createdBy = createdBy;
     }
 
-    public static Survey create(String title, String description, String thumbnailUrl, ContentType contentType, String contentUrl) {
+    public static Survey create(Topic topic, String title, String description, String thumbnailUrl, ContentType contentType, String contentUrl) {
         User user = new User(UserContextHolder.userId());
-        return new Survey(title, description, thumbnailUrl, new ContentVo(contentType, contentUrl), user);
+        return new Survey(topic, title, description, thumbnailUrl, new ContentVo(contentType, contentUrl), user);
     }
 
     public void update(String title, String description, String thumbnail, ContentType contentType, String content) {

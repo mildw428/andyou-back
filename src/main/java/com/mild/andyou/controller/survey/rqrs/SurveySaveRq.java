@@ -1,6 +1,7 @@
 package com.mild.andyou.controller.survey.rqrs;
 
 import com.mild.andyou.domain.survey.ContentType;
+import com.mild.andyou.domain.survey.Topic;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,6 +15,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SurveySaveRq {
+    private Topic topic;
     private String title;
     private String description;
     private String thumbnail;

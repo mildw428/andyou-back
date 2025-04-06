@@ -1,6 +1,7 @@
 package com.mild.andyou.controller.survey.rqrs;
 
 import com.mild.andyou.domain.survey.Survey;
+import com.mild.andyou.domain.survey.Topic;
 import com.mild.andyou.utils.s3.S3FilePath;
 import com.mild.andyou.utils.s3.S3Utils;
 import lombok.AllArgsConstructor;
@@ -17,6 +18,7 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class SurveySearchRs {
     private Long id;
+    private Topic topic;
     private String title;
     private String thumbnailUrl;
     private Long participantCount;
@@ -34,6 +36,7 @@ public class SurveySearchRs {
 
         return new SurveySearchRs(
                 survey.getId(),
+                survey.getTopic(),
                 survey.getTitle(),
                 S3FilePath.getSurveyContentPath(survey.getThumbnail()),
                 participantCount,

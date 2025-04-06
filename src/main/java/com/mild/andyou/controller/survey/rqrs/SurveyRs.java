@@ -2,6 +2,7 @@ package com.mild.andyou.controller.survey.rqrs;
 
 import com.mild.andyou.domain.survey.ContentType;
 import com.mild.andyou.domain.survey.Survey;
+import com.mild.andyou.domain.survey.Topic;
 import com.mild.andyou.utils.s3.S3FilePath;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -17,14 +18,16 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class SurveyRs {
     private Long id;
+    private Topic topic;
     private String title;
     private String description;
     private ContentType contentType;
     private String contentUrl;
     private Long optionId;
+    private Long participantCount;
     private List<OptionRs> options = new ArrayList<>();
 
-    public static SurveyRs convertToSurveyRs(Survey survey, Long optionId) {
+    public static SurveyRs convertToSurveyRs(Survey survey, Long optionId, Long participantCount) {
         List<OptionRs> optionRsList = survey.getOptions().stream()
                 .map(option -> new OptionRs(
                         option.getId(),
@@ -38,6 +41,7 @@ public class SurveyRs {
 
         return new SurveyRs(
                 survey.getId(),
+                survey.getTopic(),
                 survey.getTitle(),
                 survey.getDescription(),
                 survey.getContentVo().getContentType(),
@@ -45,6 +49,7 @@ public class SurveyRs {
                         S3FilePath.getSurveyContentPath(survey.getContentVo().getContent()) :
                         survey.getContentVo().getContent(),
                 optionId,
+                participantCount,
                 optionRsList
         );
     }

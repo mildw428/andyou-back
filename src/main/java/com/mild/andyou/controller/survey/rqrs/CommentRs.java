@@ -7,21 +7,37 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
-@Getter @Setter
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class CommentRs {
     private Long id;
+    private Long authorId;
     private String author;
     private String content;
+    private Long parentId;
+    private String mention;
+    private List<CommentRs> children;
     private LocalDateTime createdAt;
 
     public static CommentRs convertToCommentRs(Comment comment) {
+        List<CommentRs> childrens = comment.getChildren().stream()
+                .map(CommentRs::convertToCommentRs)
+                .toList();
+
         return new CommentRs(
                 comment.getId(),
-                comment.getAuthor(),
+                comment.getUser().getId(),
+                comment.getUser().getNickname(),
                 comment.getContent(),
+                comment.getParent() == null ? null : comment.getParent().getId(),
+                comment.getMention() == null ? null : comment.getMention().getNickname(),
+                childrens,
                 comment.getCreatedAt()
         );
     }

@@ -52,7 +52,9 @@ public class SurveyService {
 
     @Transactional
     public SurveySaveRs saveSurvey(SurveySaveRq rq) {
-        Survey survey = Survey.create(rq.getTitle(),
+        Survey survey = Survey.create(
+                rq.getTopic(),
+                rq.getTitle(),
                 rq.getDescription(),
                 rq.getThumbnail(),
                 rq.getContentType(),
@@ -126,12 +128,13 @@ public class SurveyService {
         }
 
         Long selectedId = responseOpt.map(surveyResponse -> surveyResponse.getOption().getId()).orElse(null);
-        return SurveyRs.convertToSurveyRs(survey, selectedId);
+        Map<Long ,Long> countMap = surveyRepository.countMap(List.of(survey));
+        return SurveyRs.convertToSurveyRs(survey, selectedId, countMap.get(id));
     }
 
-    public Page<SurveySearchRs> searchSurveys(String keyword, PageRq pageRq) {
+    public Page<SurveySearchRs> searchSurveys(Topic topic, String keyword, PageRq pageRq) {
 
-        Page<Survey> surveys = surveyRepository.findBySearch(keyword, pageRq.toPageable());
+        Page<Survey> surveys = surveyRepository.findBySearch(topic, keyword, pageRq.toPageable());
         Map<Long, Long> countMap = surveyRepository.countMap(surveys.getContent());
 
         return surveys.map(s->SurveySearchRs.convertToSurveyRs(s, countMap.get(s.getId())));
@@ -145,8 +148,8 @@ public class SurveyService {
         }
         Survey survey = surveyOpt.get();
         survey.vote(rq.getOptionId());
-
-        return SurveyRs.convertToSurveyRs(survey, rq.getOptionId());
+        Map<Long, Long> countMap = surveyRepository.countMap(List.of(survey));
+        return SurveyRs.convertToSurveyRs(survey, rq.getOptionId(), countMap.get(surveyId));
     }
 
 
