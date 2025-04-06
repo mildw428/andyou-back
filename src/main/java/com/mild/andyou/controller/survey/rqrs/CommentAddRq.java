@@ -10,5 +10,6 @@ import lombok.Setter;
 @AllArgsConstructor
 public class CommentAddRq {
     private Long parentId;
+    private Long mentionUserId;
     private String content;
 }

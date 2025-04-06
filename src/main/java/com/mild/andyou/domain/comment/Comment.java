@@ -38,6 +38,10 @@ public class Comment {
     @JoinColumn(name = "parent_id")
     private Comment parent;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "mention_user_id")
+    private User mention;
+
     private Boolean deleted = false;
 
     @OneToMany(mappedBy = "parent", fetch = FetchType.LAZY)
@@ -49,23 +53,21 @@ public class Comment {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
-    private Comment(Survey survey, User user, String content, Comment parent) {
+    private Comment(Survey survey, User user, String content, Comment parent, User mention) {
         this.survey = survey;
         this.user = user;
         this.content = content;
         this.parent = parent;
+        this.mention = mention;
     }
 
-    public static Comment create(Survey survey, String content, Comment parent) {
+    public static Comment create(Survey survey, String content, Comment parent, User mention) {
         return new Comment(
                 survey,
                 new User(UserContextHolder.getUserContext().getUserId()),
                 content,
-                parent
+                parent,
+                mention
         );
-    }
-
-    public String getAuthor() {
-        return user.getNickname();
     }
 }

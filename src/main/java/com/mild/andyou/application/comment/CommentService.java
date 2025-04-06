@@ -6,6 +6,7 @@ import com.mild.andyou.domain.comment.Comment;
 import com.mild.andyou.domain.comment.CommentRepository;
 import com.mild.andyou.domain.survey.Survey;
 import com.mild.andyou.domain.survey.SurveyRepository;
+import com.mild.andyou.domain.user.User;
 import com.mild.andyou.utils.PageRq;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -36,11 +37,16 @@ public class CommentService {
         if(rq.getParentId()!=null) {
             parent = commentRepository.findById(rq.getParentId()).orElseThrow();
         }
+        User mention = null;
+        if(rq.getMentionUserId() != null) {
+            mention = new User(rq.getMentionUserId());
+        }
 
         Comment comment = Comment.create(
                 survey,
                 rq.getContent(),
-                parent
+                parent,
+                mention
         );
         commentRepository.save(comment);
         return CommentRs.convertToCommentRs(comment);
