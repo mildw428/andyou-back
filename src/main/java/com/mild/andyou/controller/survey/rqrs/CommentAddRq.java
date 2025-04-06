@@ -9,5 +9,6 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CommentAddRq {
+    private Long parentId;
     private String content;
 }

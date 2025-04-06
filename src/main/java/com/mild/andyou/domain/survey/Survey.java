@@ -25,10 +25,10 @@ public class Survey {
     @Enumerated(EnumType.STRING)
     private Topic topic;
 
-    @Column(nullable = false, length = 200)
+    @Column(nullable = false, length = 50)
     private String title;
 
-    @Lob
+    @Column(length = 500)
     private String description;
 
     @Column(length = 500)

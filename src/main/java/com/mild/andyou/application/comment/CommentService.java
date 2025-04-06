@@ -1,5 +1,6 @@
 package com.mild.andyou.application.comment;
 
+import com.mild.andyou.controller.survey.rqrs.CommentAddRq;
 import com.mild.andyou.controller.survey.rqrs.CommentRs;
 import com.mild.andyou.domain.comment.Comment;
 import com.mild.andyou.domain.comment.CommentRepository;
@@ -21,21 +22,25 @@ public class CommentService {
     private final CommentRepository commentRepository;
 
     public Page<CommentRs> getComments(Long surveyId, PageRq pageRq) {
-        Page<Comment> comments = commentRepository.findBySurveyId(surveyId, pageRq.toPageable());
+        Page<Comment> comments = commentRepository.findBySurveyIdAndParentIsNull(surveyId, pageRq.toPageable());
 
         return comments.map(CommentRs::convertToCommentRs);
     }
 
     // 댓글 작성
     @Transactional
-    public CommentRs addComment(Long surveyId, String content) {
+    public CommentRs addComment(Long surveyId, CommentAddRq rq) {
         Optional<Survey> surveyOpt = surveyRepository.findById(surveyId);
         Survey survey = surveyOpt.get();
+        Comment parent = null;
+        if(rq.getParentId()!=null) {
+            parent = commentRepository.findById(rq.getParentId()).orElseThrow();
+        }
 
-        Comment comment = new Comment(
+        Comment comment = Comment.create(
                 survey,
-                content,
-                null
+                rq.getContent(),
+                parent
         );
         commentRepository.save(comment);
         return CommentRs.convertToCommentRs(comment);

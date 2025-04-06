@@ -24,6 +24,7 @@ public class SurveyOption {
     @JoinColumn(name = "survey_id")
     private Survey survey;
 
+    @Column(length = 500)
     private String text;
 
     @Embedded

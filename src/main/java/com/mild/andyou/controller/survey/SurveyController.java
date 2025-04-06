@@ -77,6 +77,6 @@ public class SurveyController {
     public ResponseEntity<CommentRs> addComment(
             @PathVariable Long surveyId,
             @RequestBody CommentAddRq rq) {
-        return ResponseEntity.ok(commentService.addComment(surveyId, rq.getContent()));
+        return ResponseEntity.ok(commentService.addComment(surveyId, rq));
     }
 } 

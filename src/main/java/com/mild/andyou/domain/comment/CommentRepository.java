@@ -9,5 +9,5 @@ import java.util.List;
 
 @Repository
 public interface CommentRepository extends JpaRepository<Comment, Long> {
-    Page<Comment> findBySurveyId(Long surveyId, Pageable pageable);
+    Page<Comment> findBySurveyIdAndParentIsNull(Long surveyId, Pageable pageable);
 }
