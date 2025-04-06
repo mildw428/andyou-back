@@ -24,9 +24,10 @@ public class SurveyRs {
     private ContentType contentType;
     private String contentUrl;
     private Long optionId;
+    private Long participantCount;
     private List<OptionRs> options = new ArrayList<>();
 
-    public static SurveyRs convertToSurveyRs(Survey survey, Long optionId) {
+    public static SurveyRs convertToSurveyRs(Survey survey, Long optionId, Long participantCount) {
         List<OptionRs> optionRsList = survey.getOptions().stream()
                 .map(option -> new OptionRs(
                         option.getId(),
@@ -48,6 +49,7 @@ public class SurveyRs {
                         S3FilePath.getSurveyContentPath(survey.getContentVo().getContent()) :
                         survey.getContentVo().getContent(),
                 optionId,
+                participantCount,
                 optionRsList
         );
     }

@@ -128,7 +128,8 @@ public class SurveyService {
         }
 
         Long selectedId = responseOpt.map(surveyResponse -> surveyResponse.getOption().getId()).orElse(null);
-        return SurveyRs.convertToSurveyRs(survey, selectedId);
+        Map<Long ,Long> countMap = surveyRepository.countMap(List.of(survey));
+        return SurveyRs.convertToSurveyRs(survey, selectedId, countMap.get(id));
     }
 
     public Page<SurveySearchRs> searchSurveys(String keyword, PageRq pageRq) {
@@ -147,8 +148,8 @@ public class SurveyService {
         }
         Survey survey = surveyOpt.get();
         survey.vote(rq.getOptionId());
-
-        return SurveyRs.convertToSurveyRs(survey, rq.getOptionId());
+        Map<Long, Long> countMap = surveyRepository.countMap(List.of(survey));
+        return SurveyRs.convertToSurveyRs(survey, rq.getOptionId(), countMap.get(surveyId));
     }
 
 
