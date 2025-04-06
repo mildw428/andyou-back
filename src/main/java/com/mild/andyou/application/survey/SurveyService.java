@@ -132,9 +132,9 @@ public class SurveyService {
         return SurveyRs.convertToSurveyRs(survey, selectedId, countMap.get(id));
     }
 
-    public Page<SurveySearchRs> searchSurveys(String keyword, PageRq pageRq) {
+    public Page<SurveySearchRs> searchSurveys(Topic topic, String keyword, PageRq pageRq) {
 
-        Page<Survey> surveys = surveyRepository.findBySearch(keyword, pageRq.toPageable());
+        Page<Survey> surveys = surveyRepository.findBySearch(topic, keyword, pageRq.toPageable());
         Map<Long, Long> countMap = surveyRepository.countMap(surveys.getContent());
 
         return surveys.map(s->SurveySearchRs.convertToSurveyRs(s, countMap.get(s.getId())));

@@ -3,7 +3,6 @@ package com.mild.andyou.domain.survey;
 import com.querydsl.core.Tuple;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
-import com.querydsl.core.types.Path;
 import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.PathBuilder;
@@ -29,10 +28,13 @@ public class SurveyRepositoryDslImpl extends QuerydslRepositorySupport implement
     }
 
     @Override
-    public Page<Survey> findBySearch(String keyword, Pageable pageable) {
+    public Page<Survey> findBySearch(Topic topic, String keyword, Pageable pageable) {
         // 콘텐츠 쿼리
         List<Survey> content = from(survey)
-                .where(containKeyword(keyword))
+                .where(
+                        containKeyword(keyword),
+                        eqTopic(topic)
+                )
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .orderBy(getOrderSpecifier(pageable.getSort()))
@@ -46,6 +48,7 @@ public class SurveyRepositoryDslImpl extends QuerydslRepositorySupport implement
         // Page 객체 생성
         return new PageImpl<>(content, pageable, total);
     }
+
 
     @Override
     public Page<Survey> findByCreatedBy(Long userId, Pageable pageable) {
@@ -82,6 +85,13 @@ public class SurveyRepositoryDslImpl extends QuerydslRepositorySupport implement
                         tuple -> tuple.get(0, Long.class),
                         tuple -> tuple.get(1, Long.class)
                 ));
+    }
+
+    private BooleanExpression eqTopic(Topic topic) {
+        if(topic == null) {
+            return null;
+        }
+        return survey.topic.eq(topic);
     }
 
     private static BooleanExpression eqCreatedBy(Long userId) {

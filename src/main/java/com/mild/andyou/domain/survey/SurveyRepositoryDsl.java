@@ -7,7 +7,7 @@ import java.util.Map;
 
 public interface SurveyRepositoryDsl {
 
-    Page<Survey> findBySearch(String keyword, Pageable pageable);
+    Page<Survey> findBySearch(Topic topic, String keyword, Pageable pageable);
 
     Page<Survey> findByCreatedBy(Long userId, Pageable pageable);
 

@@ -3,6 +3,7 @@ package com.mild.andyou.controller.survey;
 import com.mild.andyou.application.comment.CommentService;
 import com.mild.andyou.application.survey.SurveyService;
 import com.mild.andyou.controller.survey.rqrs.*;
+import com.mild.andyou.domain.survey.Topic;
 import com.mild.andyou.utils.PageResponse;
 import com.mild.andyou.utils.PageRq;
 import jakarta.annotation.Nullable;
@@ -49,8 +50,11 @@ public class SurveyController {
 
     // 키워드로 설문 검색
     @GetMapping("/search")
-    public ResponseEntity<PageResponse<SurveySearchRs>> searchSurveys(@RequestParam @Nullable String keyword, PageRq pageRq) {
-        return ResponseEntity.ok(PageResponse.from(surveyService.searchSurveys(keyword, pageRq)));
+    public ResponseEntity<PageResponse<SurveySearchRs>> searchSurveys(
+            @RequestParam @Nullable Topic topic,
+            @RequestParam @Nullable String keyword,
+            PageRq pageRq) {
+        return ResponseEntity.ok(PageResponse.from(surveyService.searchSurveys(topic, keyword, pageRq)));
     }
 
     // 설문 참여(투표)
