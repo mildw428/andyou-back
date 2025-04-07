@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
 public class SurveyRs {
     private Long id;
     private Topic topic;
+    private String thumbnailUrl;
     private String title;
     private String description;
     private ContentType contentType;
@@ -42,6 +43,9 @@ public class SurveyRs {
         return new SurveyRs(
                 survey.getId(),
                 survey.getTopic(),
+                survey.getThumbnail() == null ?
+                        null :
+                        S3FilePath.getSurveyContentPath(survey.getThumbnail()),
                 survey.getTitle(),
                 survey.getDescription(),
                 survey.getContentVo().getContentType(),

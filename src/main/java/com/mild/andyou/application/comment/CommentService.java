@@ -1,9 +1,14 @@
 package com.mild.andyou.application.comment;
 
+import com.mild.andyou.config.filter.UserContextHolder;
+import com.mild.andyou.controller.comment.rqrs.CommentResponseRq;
+import com.mild.andyou.controller.comment.rqrs.CommentResponseRs;
 import com.mild.andyou.controller.survey.rqrs.CommentAddRq;
 import com.mild.andyou.controller.survey.rqrs.CommentRs;
 import com.mild.andyou.domain.comment.Comment;
 import com.mild.andyou.domain.comment.CommentRepository;
+import com.mild.andyou.domain.comment.CommentResponse;
+import com.mild.andyou.domain.comment.CommentResponseRepository;
 import com.mild.andyou.domain.survey.Survey;
 import com.mild.andyou.domain.survey.SurveyRepository;
 import com.mild.andyou.domain.user.User;
@@ -21,6 +26,7 @@ public class CommentService {
 
     private final SurveyRepository surveyRepository;
     private final CommentRepository commentRepository;
+    private final CommentResponseRepository commentResponseRepository;
 
     public Page<CommentRs> getComments(Long surveyId, PageRq pageRq) {
         Page<Comment> comments = commentRepository.findBySurveyIdAndParentIsNull(surveyId, pageRq.toPageable());
@@ -50,6 +56,19 @@ public class CommentService {
         );
         commentRepository.save(comment);
         return CommentRs.convertToCommentRs(comment);
+    }
+
+    public CommentResponseRs commentResponse(Long id, CommentResponseRq rq) {
+        Comment comment = commentRepository.findById(id).orElseThrow();
+        CommentResponse response = commentResponseRepository.findByComment_IdAndUser_Id(id, UserContextHolder.userId())
+                .orElseGet(()->CommentResponse.create(comment));
+        switch (rq.getType()) {
+            case LIKE -> response.like();
+            case HATE -> response.hate();
+            case NONE -> response.delete();
+        }
+        commentResponseRepository.save(response);
+        return new CommentResponseRs(comment);
     }
 
 }
