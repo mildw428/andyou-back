@@ -1,6 +1,7 @@
 package com.mild.andyou.controller.survey.rqrs;
 
 import com.mild.andyou.domain.comment.Comment;
+import com.mild.andyou.domain.comment.CommentResponseType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,6 +23,9 @@ public class CommentRs {
     private String content;
     private Long parentId;
     private String mention;
+    private CommentResponseType responseType;
+    private Long likeCount;
+    private Long hateCount;
     private List<CommentRs> children;
     private LocalDateTime createdAt;
 
@@ -37,6 +41,9 @@ public class CommentRs {
                 comment.getContent(),
                 comment.getParent() == null ? null : comment.getParent().getId(),
                 comment.getMention() == null ? null : comment.getMention().getNickname(),
+                comment.responseType(),
+                comment.likeCount(),
+                comment.hateCount(),
                 childrens,
                 comment.getCreatedAt()
         );

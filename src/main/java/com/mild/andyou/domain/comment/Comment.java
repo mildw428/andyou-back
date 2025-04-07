@@ -11,6 +11,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Entity
 @Table(name = "comments")
@@ -53,6 +54,9 @@ public class Comment {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
+    @OneToMany(mappedBy = "comment", fetch = FetchType.LAZY)
+    private List<CommentResponse> responses = new ArrayList<>();
+
     private Comment(Survey survey, User user, String content, Comment parent, User mention) {
         this.survey = survey;
         this.user = user;
@@ -69,5 +73,31 @@ public class Comment {
                 parent,
                 mention
         );
+    }
+
+    public long likeCount() {
+        return responses.stream().filter(r->r.getLike() && !r.isDeleted()).count();
+    }
+
+    public long hateCount() {
+        return responses.stream().filter(r->!r.getLike() && !r.isDeleted()).count();
+    }
+
+    public CommentResponseType responseType() {
+        if(UserContextHolder.userId() == null) {
+            return CommentResponseType.NONE;
+        }
+        Optional<CommentResponse> responseOpt = responses.stream()
+                .filter(r -> r.getUser().getId().equals(UserContextHolder.userId())).findAny();
+        if (responseOpt.isPresent()) {
+            if (responseOpt.get().isDeleted()) {
+                return CommentResponseType.NONE;
+            } else if (responseOpt.get().getLike()) {
+                return CommentResponseType.LIKE;
+            } else {
+                return CommentResponseType.HATE;
+            }
+        }
+        return CommentResponseType.NONE;
     }
 }
