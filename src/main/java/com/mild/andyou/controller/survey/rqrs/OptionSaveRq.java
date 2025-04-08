@@ -11,6 +11,5 @@ import lombok.Setter;
 @AllArgsConstructor
 public class OptionSaveRq {
     private String text;
-    private ContentType contentType;
-    private String content;
+    private ContentDto content;
 }

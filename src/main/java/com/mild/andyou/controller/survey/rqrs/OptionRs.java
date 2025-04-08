@@ -9,7 +9,6 @@ import lombok.*;
 public class OptionRs {
     private Long id;
     private String text;
-    private ContentType contentType;
-    private String contentUrl;
+    private ContentDto content;
     private int votes;
 }
