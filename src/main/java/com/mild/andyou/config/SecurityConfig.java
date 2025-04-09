@@ -54,7 +54,7 @@ public class SecurityConfig {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowedOrigins(List.of("http://localhost:3000",
                 "http://golrajo.com",
-                "https://golajo.com",
+                "https://golrajo.com",
                 "http://www.golajo.com",
                 "https://www.golajo.com"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
