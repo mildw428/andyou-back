@@ -79,7 +79,7 @@ public class SurveyService {
 
     @Transactional
     public SurveySaveRs updateSurvey(Long id, SurveySaveRq rq) {
-        Survey survey = surveyRepository.findById(id).orElseThrow();
+        Survey survey = surveyRepository.findByIdAndIsDeletedFalse(id).orElseThrow();
         Optional<SurveyResponse> surveyResponseOpt = surveyResponseRepository.findFirstBySurvey(survey);
 
         if(!survey.getCreatedBy().getId().equals(UserContextHolder.userId()) || surveyResponseOpt.isPresent()) {
@@ -108,6 +108,12 @@ public class SurveyService {
         return new SurveySaveRs(survey.getId());
     }
 
+    @Transactional
+    public void deleteSurvey(Long id) {
+        Survey survey = surveyRepository.findById(id).orElseThrow();
+        survey.delete();
+    }
+
     public Page<SurveySearchRs> getMySurveys(PageRq pageRq) {
         if (UserContextHolder.userId() == null) {
             throw new RuntimeException();
@@ -119,7 +125,7 @@ public class SurveyService {
     }
 
     public SurveyRs getSurveyById(Long id) {
-        Survey survey = surveyRepository.findById(id).orElseThrow();
+        Survey survey = surveyRepository.findByIdAndIsDeletedFalse(id).orElseThrow();
 
         Optional<SurveyResponse> responseOpt = Optional.empty();
         if(UserContextHolder.userId() != null) {
@@ -142,7 +148,7 @@ public class SurveyService {
 
     @Transactional
     public SurveyRs voteSurvey(Long surveyId, SurveyVoteRq rq) {
-        Optional<Survey> surveyOpt = surveyRepository.findById(surveyId);
+        Optional<Survey> surveyOpt = surveyRepository.findByIdAndIsDeletedFalse(surveyId);
         if (surveyOpt.isEmpty()) {
             return null;
         }
@@ -151,6 +157,5 @@ public class SurveyService {
         Map<Long, Long> countMap = surveyRepository.countMap(List.of(survey));
         return SurveyRs.convertToSurveyRs(survey, rq.getOptionId(), countMap.get(surveyId));
     }
-
 
 }

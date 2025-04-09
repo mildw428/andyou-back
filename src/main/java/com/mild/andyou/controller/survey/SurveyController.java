@@ -37,6 +37,12 @@ public class SurveyController {
         return ResponseEntity.ok(surveyService.updateSurvey(id, rq));
     }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteSurvey(@PathVariable Long id) {
+        surveyService.deleteSurvey(id);
+        return ResponseEntity.ok().build();
+    }
+
     @GetMapping("/my")
     public ResponseEntity<PageResponse<SurveySearchRs>> getMySurveys(PageRq pageRq) {
         return ResponseEntity.ok(PageResponse.from(surveyService.getMySurveys(pageRq)));

@@ -16,6 +16,7 @@ import org.springframework.data.domain.Pageable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.mild.andyou.domain.survey.QSurvey.survey;
@@ -33,7 +34,8 @@ public class SurveyRepositoryDslImpl extends QuerydslRepositorySupport implement
         List<Survey> content = from(survey)
                 .where(
                         containKeyword(keyword),
-                        eqTopic(topic)
+                        eqTopic(topic),
+                        survey.isDeleted.eq(false)
                 )
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
@@ -53,7 +55,10 @@ public class SurveyRepositoryDslImpl extends QuerydslRepositorySupport implement
     @Override
     public Page<Survey> findByCreatedBy(Long userId, Pageable pageable) {
         List<Survey> content = from(survey)
-                .where(eqCreatedBy(userId))
+                .where(
+                        eqCreatedBy(userId),
+                        survey.isDeleted.eq(false)
+                )
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .orderBy(getOrderSpecifier(pageable.getSort()))
@@ -72,7 +77,10 @@ public class SurveyRepositoryDslImpl extends QuerydslRepositorySupport implement
     public Map<Long, Long> countMap(List<Survey> surveys) {
         List<Tuple> result = from(survey)
                 .leftJoin(surveyResponse).on(surveyResponse.survey.eq(survey))
-                .where(survey.in(surveys))
+                .where(
+                        survey.in(surveys),
+                        survey.isDeleted.eq(false)
+                )
                 .groupBy(survey.id)
                 .select(
                         survey.id,
