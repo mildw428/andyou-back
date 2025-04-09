@@ -54,9 +54,9 @@ public class SecurityConfig {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowedOrigins(List.of("http://localhost:3000",
                 "http://golrajo.com",
-                "https://golajo.com",
-                "http://www.golajo.com",
-                "https://www.golajo.com"));
+                "https://golrajo.com",
+                "http://www.golrajo.com",
+                "https://www.golrajo.com"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
 //        config.setAllowCredentials(true); // 프론트에서 credentials: 'include' 사용 시 필수
