@@ -108,6 +108,12 @@ public class SurveyService {
         return new SurveySaveRs(survey.getId());
     }
 
+    @Transactional
+    public void deleteSurvey(Long id) {
+        Survey survey = surveyRepository.findById(id).orElseThrow();
+        survey.delete();
+    }
+
     public Page<SurveySearchRs> getMySurveys(PageRq pageRq) {
         if (UserContextHolder.userId() == null) {
             throw new RuntimeException();
@@ -151,6 +157,5 @@ public class SurveyService {
         Map<Long, Long> countMap = surveyRepository.countMap(List.of(survey));
         return SurveyRs.convertToSurveyRs(survey, rq.getOptionId(), countMap.get(surveyId));
     }
-
 
 }

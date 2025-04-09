@@ -104,4 +104,8 @@ public class Survey {
         this.options.clear();
         surveyOptions.forEach(this::addOption);
     }
+
+    public void delete() {
+        this.isDeleted=true;
+    }
 }
