@@ -45,7 +45,7 @@ public class SurveyService {
         }
 
         return new ContentSaveRs(
-                Delimiter.SLASH.join(S3FilePath.cdnUrl, S3FilePath.SURVEY_CONTENT_PATH),
+                Delimiter.SLASH.join(S3FilePath.CDN_URL, S3FilePath.SURVEY_CONTENT_PATH),
                 surveyContent.getFileName()
         );
     }
@@ -56,15 +56,15 @@ public class SurveyService {
                 rq.getTopic(),
                 rq.getTitle(),
                 rq.getDescription(),
-                rq.getThumbnail(),
-                rq.getContentType(),
-                rq.getContent()
+                rq.getThumbnail().getFileName(),
+                rq.getContent().getContentType(),
+                rq.getContent().getFileName()
         );
 
         List<SurveyOption> surveyOptions = rq.getOptions().stream().map(o -> SurveyOption.craete(
                 o.getText(),
-                o.getContentType(),
-                o.getContent()
+                o.getContent().getContentType(),
+                o.getContent().getFileName()
         )).collect(Collectors.toList());
 
         survey.setOptions(surveyOptions);
@@ -88,16 +88,16 @@ public class SurveyService {
 
         List<SurveyOption> surveyOptions = rq.getOptions().stream().map(o -> SurveyOption.craete(
                 o.getText(),
-                o.getContentType(),
-                o.getContent()
+                o.getContent().getContentType(),
+                o.getContent().getFileName()
         )).collect(Collectors.toList());
 
         survey.update(
                 rq.getTitle(),
                 rq.getDescription(),
-                rq.getThumbnail(),
-                rq.getContentType(),
-                rq.getContent()
+                rq.getThumbnail().getFileName(),
+                rq.getContent().getContentType(),
+                rq.getContent().getFileName()
         );
         survey.setOptions(surveyOptions);
 

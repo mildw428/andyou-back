@@ -10,7 +10,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class ContentSaveRs {
 
-    private String contentUrl;
+    private String path;
     private String fileName;
 
 }

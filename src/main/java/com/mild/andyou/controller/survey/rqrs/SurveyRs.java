@@ -19,11 +19,10 @@ import java.util.stream.Collectors;
 public class SurveyRs {
     private Long id;
     private Topic topic;
-    private String thumbnailUrl;
+    private ContentDto thumbnail;
     private String title;
     private String description;
-    private ContentType contentType;
-    private String contentUrl;
+    private ContentDto content;
     private Long optionId;
     private Long participantCount;
     private List<OptionRs> options = new ArrayList<>();
@@ -33,25 +32,17 @@ public class SurveyRs {
                 .map(option -> new OptionRs(
                         option.getId(),
                         option.getText(),
-                        option.getContentVo().getContentType(),
-                        option.getContentVo().getContentType() == ContentType.IMAGE ?
-                                S3FilePath.getSurveyContentPath(option.getContentVo().getContent()) :
-                                option.getContentVo().getContent(),
+                        ContentDto.create(option.getContentVo()),
                         optionId == null ? 0 : option.getResponses().size()))
                 .collect(Collectors.toList());
 
         return new SurveyRs(
                 survey.getId(),
                 survey.getTopic(),
-                survey.getThumbnail() == null ?
-                        null :
-                        S3FilePath.getSurveyContentPath(survey.getThumbnail()),
+                ContentDto.create(survey.getThumbnail()),
                 survey.getTitle(),
                 survey.getDescription(),
-                survey.getContentVo().getContentType(),
-                survey.getContentVo().getContentType() == ContentType.IMAGE ?
-                        S3FilePath.getSurveyContentPath(survey.getContentVo().getContent()) :
-                        survey.getContentVo().getContent(),
+                ContentDto.create(survey.getContentVo()),
                 optionId,
                 participantCount,
                 optionRsList

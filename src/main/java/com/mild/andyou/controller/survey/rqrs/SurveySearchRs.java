@@ -20,7 +20,7 @@ public class SurveySearchRs {
     private Long id;
     private Topic topic;
     private String title;
-    private String thumbnailUrl;
+    private ContentDto thumbnail;
     private Long participantCount;
     private List<OptionRs> options = new ArrayList<>();
 
@@ -29,8 +29,7 @@ public class SurveySearchRs {
                 .map(option -> new OptionRs(
                         option.getId(),
                         option.getText(),
-                        option.getContentVo().getContentType(),
-                        S3FilePath.getSurveyContentPath(option.getContentVo().getContent()),
+                        ContentDto.create(option.getContentVo()),
                         0))
                 .collect(Collectors.toList());
 
@@ -38,7 +37,7 @@ public class SurveySearchRs {
                 survey.getId(),
                 survey.getTopic(),
                 survey.getTitle(),
-                S3FilePath.getSurveyContentPath(survey.getThumbnail()),
+                ContentDto.create(survey.getThumbnail()),
                 participantCount,
                 optionRsList
         );

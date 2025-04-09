@@ -18,25 +18,24 @@ public class SurveySaveRq {
     private Topic topic;
     private String title;
     private String description;
-    private String thumbnail;
-    private ContentType contentType;
-    private String content;
+    private ContentDto thumbnail;
+    private ContentDto content;
     private List<OptionSaveRq> options;
 
     public List<String> getFileNames() {
 
         List<String> fileNames = new ArrayList<>();
-        if (this.getThumbnail() != null) {
-            fileNames.add(this.getThumbnail());
+        if (this.getThumbnail().getContentType() == ContentType.IMAGE) {
+            fileNames.add(this.getContent().getFileName());
         }
 
-        if (this.getContentType() == ContentType.IMAGE && this.getContent() != null) {
-            fileNames.add(this.getContent());
+        if (this.content.getContentType() == ContentType.IMAGE && this.getContent() != null) {
+            fileNames.add(this.getContent().getFileName());
         }
 
         this.getOptions().forEach(o -> {
-            if (o.getContentType() == ContentType.IMAGE && o.getContent() != null) {
-                fileNames.add(o.getContent());
+            if (o.getContent().getContentType() == ContentType.IMAGE && o.getContent() != null) {
+                fileNames.add(o.getContent().getFileName());
             }
         });
 
