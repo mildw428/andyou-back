@@ -79,7 +79,7 @@ public class SurveyService {
 
     @Transactional
     public SurveySaveRs updateSurvey(Long id, SurveySaveRq rq) {
-        Survey survey = surveyRepository.findById(id).orElseThrow();
+        Survey survey = surveyRepository.findByIdAndIsDeletedFalse(id).orElseThrow();
         Optional<SurveyResponse> surveyResponseOpt = surveyResponseRepository.findFirstBySurvey(survey);
 
         if(!survey.getCreatedBy().getId().equals(UserContextHolder.userId()) || surveyResponseOpt.isPresent()) {
@@ -119,7 +119,7 @@ public class SurveyService {
     }
 
     public SurveyRs getSurveyById(Long id) {
-        Survey survey = surveyRepository.findById(id).orElseThrow();
+        Survey survey = surveyRepository.findByIdAndIsDeletedFalse(id).orElseThrow();
 
         Optional<SurveyResponse> responseOpt = Optional.empty();
         if(UserContextHolder.userId() != null) {
@@ -142,7 +142,7 @@ public class SurveyService {
 
     @Transactional
     public SurveyRs voteSurvey(Long surveyId, SurveyVoteRq rq) {
-        Optional<Survey> surveyOpt = surveyRepository.findById(surveyId);
+        Optional<Survey> surveyOpt = surveyRepository.findByIdAndIsDeletedFalse(surveyId);
         if (surveyOpt.isEmpty()) {
             return null;
         }

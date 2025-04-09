@@ -47,6 +47,8 @@ public class Survey {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
+    private Boolean isDeleted;
+
     @OneToMany(mappedBy = "survey", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<SurveyOption> options = new ArrayList<>();
 
@@ -57,6 +59,7 @@ public class Survey {
         this.thumbnail = thumbnail;
         this.contentVo = contentVo;
         this.createdBy = createdBy;
+        this.isDeleted = false;
     }
 
     public static Survey create(Topic topic, String title, String description, String thumbnailUrl, ContentType contentType, String contentUrl) {

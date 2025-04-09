@@ -37,7 +37,7 @@ public class CommentService {
     // 댓글 작성
     @Transactional
     public CommentRs addComment(Long surveyId, CommentAddRq rq) {
-        Optional<Survey> surveyOpt = surveyRepository.findById(surveyId);
+        Optional<Survey> surveyOpt = surveyRepository.findByIdAndIsDeletedFalse(surveyId);
         Survey survey = surveyOpt.get();
         Comment parent = null;
         if(rq.getParentId()!=null) {

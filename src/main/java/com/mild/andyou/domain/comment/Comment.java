@@ -43,8 +43,6 @@ public class Comment {
     @JoinColumn(name = "mention_user_id")
     private User mention;
 
-    private Boolean deleted = false;
-
     @OneToMany(mappedBy = "parent", fetch = FetchType.LAZY)
     private List<Comment> children = new ArrayList<>();
 
@@ -57,12 +55,15 @@ public class Comment {
     @OneToMany(mappedBy = "comment", fetch = FetchType.LAZY)
     private List<CommentResponse> responses = new ArrayList<>();
 
+    private Boolean isDeleted;
+
     private Comment(Survey survey, User user, String content, Comment parent, User mention) {
         this.survey = survey;
         this.user = user;
         this.content = content;
         this.parent = parent;
         this.mention = mention;
+        this.isDeleted = false;
     }
 
     public static Comment create(Survey survey, String content, Comment parent, User mention) {
@@ -73,6 +74,13 @@ public class Comment {
                 parent,
                 mention
         );
+    }
+
+    public String getContent() {
+        if(isDeleted) {
+            return "삭제된 댓글입니다.";
+        }
+        return this.content;
     }
 
     public long likeCount() {
