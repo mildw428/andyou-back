@@ -58,13 +58,13 @@ public class SurveyService {
                 rq.getDescription(),
                 rq.getThumbnail().getFileName(),
                 rq.getContent().getContentType(),
-                rq.getContent().getFileName()
+                rq.getContent().getContentType() == ContentType.YOUTUBE ? rq.getContent().getPath() : rq.getContent().getFileName()
         );
 
         List<SurveyOption> surveyOptions = rq.getOptions().stream().map(o -> SurveyOption.craete(
                 o.getText(),
                 o.getContent().getContentType(),
-                o.getContent().getFileName()
+                o.getContent().getContentType() == ContentType.YOUTUBE ? o.getContent().getPath() : o.getContent().getFileName()
         )).collect(Collectors.toList());
 
         survey.setOptions(surveyOptions);
@@ -89,7 +89,7 @@ public class SurveyService {
         List<SurveyOption> surveyOptions = rq.getOptions().stream().map(o -> SurveyOption.craete(
                 o.getText(),
                 o.getContent().getContentType(),
-                o.getContent().getFileName()
+                o.getContent().getContentType() == ContentType.YOUTUBE ? o.getContent().getPath() : o.getContent().getFileName()
         )).collect(Collectors.toList());
 
         survey.update(
@@ -97,7 +97,7 @@ public class SurveyService {
                 rq.getDescription(),
                 rq.getThumbnail().getFileName(),
                 rq.getContent().getContentType(),
-                rq.getContent().getFileName()
+                rq.getContent().getContentType() == ContentType.YOUTUBE ? rq.getContent().getPath() : rq.getContent().getFileName()
         );
         survey.setOptions(surveyOptions);
 
