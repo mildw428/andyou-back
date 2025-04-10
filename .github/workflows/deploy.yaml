@@ -42,4 +42,4 @@ jobs:
           script: |
             source /home/ubuntu/app/.env
             pm2 delete spring-app || true
-            pm2 start java --name spring-app -- -jar /home/mildw/app/andyou-0.0.1-SNAPSHOT.jar
+            pm2 start java --name spring-app -- -jar /home/mildw/app/build/libs/andyou-0.0.1-SNAPSHOT.jar
