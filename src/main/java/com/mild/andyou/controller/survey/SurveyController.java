@@ -54,6 +54,11 @@ public class SurveyController {
         return ResponseEntity.ok(surveyService.getSurveyById(id));
     }
 
+    @GetMapping("/{id}/gpt-opinion")
+    public ResponseEntity<GptOpinionRs> getGptOpinion(@PathVariable Long id) {
+        return ResponseEntity.ok(surveyService.getGptOpinion(id));
+    }
+
     // 키워드로 설문 검색
     @GetMapping("/search")
     public ResponseEntity<PageResponse<SurveySearchRs>> searchSurveys(

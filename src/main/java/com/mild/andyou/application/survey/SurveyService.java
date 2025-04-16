@@ -1,5 +1,6 @@
 package com.mild.andyou.application.survey;
 
+import com.mild.andyou.application.gpt.GptService;
 import com.mild.andyou.config.filter.UserContextHolder;
 import com.mild.andyou.config.properties.BucketProperties;
 import com.mild.andyou.controller.survey.rqrs.*;
@@ -29,6 +30,7 @@ public class SurveyService {
     private final SurveyContentRepository surveyContentRepository;
     private final UserRepository userRepository;
     private final SurveyResponseRepository surveyResponseRepository;
+    private final GptService gptService;
 
     @Transactional
     public ContentSaveRs saveContent(MultipartFile file) {
@@ -136,6 +138,18 @@ public class SurveyService {
         Long selectedId = responseOpt.map(surveyResponse -> surveyResponse.getOption().getId()).orElse(null);
         Map<Long ,Long> countMap = surveyRepository.countMap(List.of(survey));
         return SurveyRs.convertToSurveyRs(survey, selectedId, countMap.get(id));
+    }
+
+    @Transactional
+    public GptOpinionRs getGptOpinion(Long id) {
+        Survey survey = surveyRepository.findByIdAndIsDeletedFalse(id).orElseThrow();
+        String opinion = survey.getGptOpinion();
+        if(opinion == null || opinion.isBlank()) {
+            opinion = gptService.createOpinion(survey);
+        }
+        survey.updateGptOpinion(opinion);
+
+        return new GptOpinionRs(opinion);
     }
 
     public Page<SurveySearchRs> searchSurveys(Topic topic, String keyword, PageRq pageRq) {
