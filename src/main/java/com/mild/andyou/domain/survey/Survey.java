@@ -39,6 +39,8 @@ public class Survey {
 
     private String gptOpinion;
 
+    private Integer voteCount;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "created_by")
     private User createdBy;
@@ -62,6 +64,8 @@ public class Survey {
         this.contentVo = contentVo;
         this.createdBy = createdBy;
         this.isDeleted = false;
+        this.voteCount = 0;
+
     }
 
     public static Survey create(Topic topic, String title, String description, String thumbnailUrl, ContentType contentType, String contentUrl) {
@@ -78,6 +82,10 @@ public class Survey {
 
     public void updateGptOpinion(String opinion) {
         this.gptOpinion = opinion;
+    }
+
+    public void updateVoteCount(Integer count) {
+        this.voteCount = count;
     }
 
     public Optional<SurveyOption> getOption(Long optionId) {

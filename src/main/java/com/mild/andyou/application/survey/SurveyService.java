@@ -169,6 +169,7 @@ public class SurveyService {
         Survey survey = surveyOpt.get();
         survey.vote(rq.getOptionId());
         Map<Long, Long> countMap = surveyRepository.countMap(List.of(survey));
+        survey.updateVoteCount(countMap.get(surveyId).intValue());
         return SurveyRs.convertToSurveyRs(survey, rq.getOptionId(), countMap.get(surveyId));
     }
 
