@@ -1,5 +1,6 @@
 package com.mild.andyou.domain.survey;
 
+import com.mild.andyou.controller.survey.rqrs.SortOrder;
 import com.querydsl.core.Tuple;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
@@ -13,6 +14,7 @@ import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport
 
 import org.springframework.data.domain.Pageable;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -29,7 +31,21 @@ public class SurveyRepositoryDslImpl extends QuerydslRepositorySupport implement
     }
 
     @Override
-    public Page<Survey> findBySearch(Topic topic, String keyword, Pageable pageable) {
+    public Page<Survey> findBySearch(Topic topic, String keyword, SortOrder order, Pageable pageable) {
+
+        OrderSpecifier<?>[] orderSpecifiers;
+
+        if (order == SortOrder.NEWEST) {
+            orderSpecifiers = new OrderSpecifier<?>[]{
+                    survey.createdAt.desc(),
+            };
+        } else { // 인기순
+            orderSpecifiers = new OrderSpecifier<?>[]{
+                    survey.voteCount.desc(),
+                    survey.createdAt.desc()
+            };
+        }
+
         // 콘텐츠 쿼리
         List<Survey> content = from(survey)
                 .where(
@@ -40,8 +56,7 @@ public class SurveyRepositoryDslImpl extends QuerydslRepositorySupport implement
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .orderBy(
-                        survey.voteCount.desc(),
-                        survey.createdAt.desc()
+                        orderSpecifiers
                 )
                 .fetch();
 
@@ -53,7 +68,6 @@ public class SurveyRepositoryDslImpl extends QuerydslRepositorySupport implement
         // Page 객체 생성
         return new PageImpl<>(content, pageable, total);
     }
-
 
     @Override
     public Page<Survey> findByCreatedBy(Long userId, Pageable pageable) {
