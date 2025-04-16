@@ -52,7 +52,7 @@ public class KakaoAuthService {
         User user = userRepository.findBySocialTypeAndSocialId(User.SocialType.KAKAO, userResponse.getId())
                 .orElseGet(() -> userRepository.save(new User(User.SocialType.KAKAO, userResponse.getId())));
 
-        if(user.getNickname().isBlank()) {
+        if(user.getNickname() == null || user.getNickname().isBlank()) {
             user.updateNickname("사용자"+user.getId());
         }
 
