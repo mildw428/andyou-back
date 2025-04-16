@@ -37,7 +37,7 @@ public class GptService {
         sb.append("선택지 :\n");
         List<SurveyOption> options = survey.getOptions();
         for(int i=0; i<options.size(); i++) {
-            sb.append(i).append(". ");
+            sb.append(i+1).append(". ");
             sb.append(options.get(i).getText()).append("\n");
         }
 
