@@ -37,6 +37,8 @@ public class Survey {
     @Embedded
     private ContentVo contentVo;
 
+    private String gptOpinion;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "created_by")
     private User createdBy;
@@ -74,6 +76,10 @@ public class Survey {
         this.contentVo = new ContentVo(contentType, content);
     }
 
+    public void updateGptOpinion(String opinion) {
+        this.gptOpinion = opinion;
+    }
+
     public Optional<SurveyOption> getOption(Long optionId) {
         return options.stream()
                 .filter(option -> option.getId().equals(optionId))
@@ -108,4 +114,5 @@ public class Survey {
     public void delete() {
         this.isDeleted=true;
     }
+
 }
