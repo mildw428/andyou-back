@@ -39,7 +39,10 @@ public class SurveyRepositoryDslImpl extends QuerydslRepositorySupport implement
                 )
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
-                .orderBy(getOrderSpecifier(pageable.getSort()))
+                .orderBy(
+                        survey.voteCount.desc(),
+                        survey.createdAt.desc()
+                )
                 .fetch();
 
         // 카운트 쿼리
@@ -96,7 +99,7 @@ public class SurveyRepositoryDslImpl extends QuerydslRepositorySupport implement
     }
 
     private BooleanExpression eqTopic(Topic topic) {
-        if(topic == null) {
+        if (topic == null) {
             return null;
         }
         return survey.topic.eq(topic);
