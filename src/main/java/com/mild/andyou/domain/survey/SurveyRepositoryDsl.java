@@ -10,7 +10,7 @@ public interface SurveyRepositoryDsl {
 
     Page<Survey> findBySearch(Topic topic, String keyword, SortOrder order, Pageable pageable);
 
-    Page<Survey> findByCreatedBy(Long userId, Pageable pageable);
+    Page<Survey> findByCreatedBy(Long userId, String keyword, Pageable pageable);
 
     Map<Long, Long> countMap(List<Survey> surveys);
 

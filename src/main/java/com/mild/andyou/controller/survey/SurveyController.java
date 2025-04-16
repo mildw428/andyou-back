@@ -46,8 +46,11 @@ public class SurveyController {
     }
 
     @GetMapping("/my")
-    public ResponseEntity<PageResponse<SurveySearchRs>> getMySurveys(PageRq pageRq) {
-        return ResponseEntity.ok(PageResponse.from(surveyService.getMySurveys(pageRq)));
+    public ResponseEntity<PageResponse<SurveySearchRs>> getMySurveys(
+            @RequestParam @Nullable String keyword,
+            PageRq pageRq
+    ) {
+        return ResponseEntity.ok(PageResponse.from(surveyService.getMySurveys(keyword, pageRq)));
     }
 
     // ID로 설문 상세 조회

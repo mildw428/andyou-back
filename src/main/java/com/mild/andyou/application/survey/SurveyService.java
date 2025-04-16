@@ -116,11 +116,11 @@ public class SurveyService {
         survey.delete();
     }
 
-    public Page<SurveySearchRs> getMySurveys(PageRq pageRq) {
+    public Page<SurveySearchRs> getMySurveys(String keyword, PageRq pageRq) {
         if (UserContextHolder.userId() == null) {
             throw new RuntimeException();
         }
-        Page<Survey> surveys = surveyRepository.findByCreatedBy(UserContextHolder.userId(), pageRq.toPageable());
+        Page<Survey> surveys = surveyRepository.findByCreatedBy(UserContextHolder.userId(), keyword, pageRq.toPageable());
         Map<Long, Long> countMap = surveyRepository.countMap(surveys.getContent());
 
         return surveys.map(s-> SurveySearchRs.convertToSurveyRs(s, countMap.get(s.getId())));
