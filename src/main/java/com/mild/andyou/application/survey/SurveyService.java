@@ -152,9 +152,9 @@ public class SurveyService {
         return new GptOpinionRs(opinion);
     }
 
-    public Page<SurveySearchRs> searchSurveys(Topic topic, String keyword, PageRq pageRq) {
+    public Page<SurveySearchRs> searchSurveys(Topic topic, String keyword, SortOrder order, PageRq pageRq) {
 
-        Page<Survey> surveys = surveyRepository.findBySearch(topic, keyword, pageRq.toPageable());
+        Page<Survey> surveys = surveyRepository.findBySearch(topic, keyword, order, pageRq.toPageable());
         Map<Long, Long> countMap = surveyRepository.countMap(surveys.getContent());
 
         return surveys.map(s->SurveySearchRs.convertToSurveyRs(s, countMap.get(s.getId())));

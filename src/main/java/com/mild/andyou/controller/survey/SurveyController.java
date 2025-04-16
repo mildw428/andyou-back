@@ -7,7 +7,9 @@ import com.mild.andyou.domain.survey.Topic;
 import com.mild.andyou.utils.PageResponse;
 import com.mild.andyou.utils.PageRq;
 import jakarta.annotation.Nullable;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -64,8 +66,9 @@ public class SurveyController {
     public ResponseEntity<PageResponse<SurveySearchRs>> searchSurveys(
             @RequestParam @Nullable Topic topic,
             @RequestParam @Nullable String keyword,
+            @RequestParam(required = false, defaultValue="NEWEST") SortOrder sortOrder,
             PageRq pageRq) {
-        return ResponseEntity.ok(PageResponse.from(surveyService.searchSurveys(topic, keyword, pageRq)));
+        return ResponseEntity.ok(PageResponse.from(surveyService.searchSurveys(topic, keyword, sortOrder, pageRq)));
     }
 
     // 설문 참여(투표)
