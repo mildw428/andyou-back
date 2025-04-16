@@ -21,6 +21,8 @@ public enum Topic {
     ANIMALS("동물"),
     GAMES("게임"),
     BEAUTY("패션·뷰티"),
+    MUSIC("음악"),
+    CARTOONS("만화"),
     ;
 
     private final String description;
