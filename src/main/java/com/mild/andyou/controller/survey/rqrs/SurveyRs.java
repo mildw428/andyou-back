@@ -37,7 +37,8 @@ public class SurveyRs {
                         ContentDto.create(option.getContentVo()),
                         option.getIsCorrect(),
                         FeedbackDto.create(option.getFeedback()),
-                        optionId == null ? 0 : option.getResponses().size() + option.getResponsesAny().size()
+                        optionId == null ? 0 : option.getResponses().size(),
+                        option.getResponsesAny().size()
                 ))
                 .collect(Collectors.toList());
 

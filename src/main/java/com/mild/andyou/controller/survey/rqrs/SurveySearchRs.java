@@ -34,6 +34,7 @@ public class SurveySearchRs {
                         ContentDto.create(option.getContentVo()),
                         option.getIsCorrect(),
                         FeedbackDto.create(option.getFeedback()),
+                        0,
                         0))
                 .collect(Collectors.toList());
 

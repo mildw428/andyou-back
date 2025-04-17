@@ -13,4 +13,5 @@ public class OptionRs {
     private Boolean isCorrect;
     private FeedbackDto feedback;
     private int votes;
+    private int AnyVotes;
 }
