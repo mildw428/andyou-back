@@ -126,9 +126,11 @@ public class SurveyService {
             throw new RuntimeException();
         }
         Page<Survey> surveys = surveyRepository.findByCreatedBy(UserContextHolder.userId(), keyword, pageRq.toPageable());
-        Map<Long, Long> countMap = surveyRepository.countMap(surveys.getContent());
+        Map<Long, Long> loginVoteCountMap = surveyRepository.loginVoteCountMap(surveys.getContent());
+        Map<Long, Long> anyVoteCountMap = surveyRepository.anyVoteCountMap(surveys.getContent());
 
-        return surveys.map(s-> SurveySearchRs.convertToSurveyRs(s, countMap.get(s.getId())));
+        return surveys.map(s->SurveySearchRs.convertToSurveyRs(
+                s, loginVoteCountMap.get(s.getId()) + anyVoteCountMap.get(s.getId())));
     }
 
     public SurveyRs getSurveyById(Long id) {
@@ -141,8 +143,11 @@ public class SurveyService {
         }
 
         Long selectedId = responseOpt.map(surveyResponse -> surveyResponse.getOption().getId()).orElse(null);
-        Map<Long ,Long> countMap = surveyRepository.countMap(List.of(survey));
-        return SurveyRs.convertToSurveyRs(survey, selectedId, countMap.get(id));
+        Map<Long, Long> loginVoteCountMap = surveyRepository.loginVoteCountMap(List.of(survey));
+        Map<Long, Long> anyVoteCountMap = surveyRepository.anyVoteCountMap(List.of(survey));
+        Long sum = loginVoteCountMap.get(id) + anyVoteCountMap.get(id);
+
+        return SurveyRs.convertToSurveyRs(survey, selectedId, sum);
     }
 
     @Transactional
@@ -160,9 +165,11 @@ public class SurveyService {
     public Page<SurveySearchRs> searchSurveys(Topic topic, String keyword, SortOrder order, PageRq pageRq) {
 
         Page<Survey> surveys = surveyRepository.findBySearch(topic, keyword, order, pageRq.toPageable());
-        Map<Long, Long> countMap = surveyRepository.countMap(surveys.getContent());
+        Map<Long, Long> loginVoteCountMap = surveyRepository.loginVoteCountMap(surveys.getContent());
+        Map<Long, Long> anyVoteCountMap = surveyRepository.anyVoteCountMap(surveys.getContent());
 
-        return surveys.map(s->SurveySearchRs.convertToSurveyRs(s, countMap.get(s.getId())));
+        return surveys.map(s->SurveySearchRs.convertToSurveyRs(
+                s, loginVoteCountMap.get(s.getId()) + anyVoteCountMap.get(s.getId())));
     }
 
     @Transactional
@@ -173,9 +180,12 @@ public class SurveyService {
         }
         Survey survey = surveyOpt.get();
         survey.vote(rq.getOptionId());
-        Map<Long, Long> countMap = surveyRepository.countMap(List.of(survey));
-        survey.updateVoteCount(countMap.get(surveyId).intValue());
-        return SurveyRs.convertToSurveyRs(survey, rq.getOptionId(), countMap.get(surveyId));
+        Map<Long, Long> loginVoteCountMap = surveyRepository.loginVoteCountMap(List.of(survey));
+        Map<Long, Long> anyVoteCountMap = surveyRepository.anyVoteCountMap(List.of(survey));
+        Long sum = loginVoteCountMap.get(surveyId) + anyVoteCountMap.get(surveyId);
+
+        survey.updateVoteCount(sum.intValue());
+        return SurveyRs.convertToSurveyRs(survey, rq.getOptionId(), sum);
     }
 
 }

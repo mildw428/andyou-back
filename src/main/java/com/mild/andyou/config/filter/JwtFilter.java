@@ -31,6 +31,14 @@ public class JwtFilter extends OncePerRequestFilter {
             HttpServletRequest request, HttpServletResponse response, FilterChain filterChain
     ) throws ServletException, IOException {
 
+        String ip = request.getRemoteAddr();
+        String forwarded = request.getHeader("X-Forwarded-For");
+        if (forwarded != null) {
+            ip = forwarded.split(",")[0];
+        }
+
+        UserContextHolder.setUserContext(new UserContext(ip));
+
         String token = null;
         try {
             token = JwtTokenUtils.resolveToken(request);
@@ -46,7 +54,9 @@ public class JwtFilter extends OncePerRequestFilter {
             }
             String id = JwtTokenUtils.getAudience(jwtProperties.getSecret(), token);
             Optional<User> userOpt = userRepository.findById(Long.valueOf(id));
-            userOpt.ifPresent(user -> UserContextHolder.setUserContext(new UserContext(user)));
+            if(userOpt.isPresent()) {
+                UserContextHolder.setUserContext(new UserContext(userOpt.get(), ip));
+            }
         }
 
         filterChain.doFilter(request, response);

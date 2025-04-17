@@ -38,6 +38,9 @@ public class SurveyOption {
     @OneToMany(mappedBy = "option", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<SurveyResponse> responses = new ArrayList<>();
 
+    @OneToMany(mappedBy = "option", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<SurveyResponseAny> responsesAny = new ArrayList<>();
+
     @CreationTimestamp
     private LocalDateTime createdAt;
 
@@ -64,6 +67,16 @@ public class SurveyOption {
                 this
         );
         responses.add(response);
+    }
+
+    public void voteAny() {
+        // 투표 기록 생성
+        SurveyResponseAny response = new SurveyResponseAny(
+                UserContextHolder.getUserContext().getIp(),
+                this.survey,
+                this
+        );
+        responsesAny.add(response);
     }
 
     public void setSurvey(Survey survey) {

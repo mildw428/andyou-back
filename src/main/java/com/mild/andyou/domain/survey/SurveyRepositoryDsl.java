@@ -12,7 +12,9 @@ public interface SurveyRepositoryDsl {
 
     Page<Survey> findByCreatedBy(Long userId, String keyword, Pageable pageable);
 
-    Map<Long, Long> countMap(List<Survey> surveys);
+    Map<Long, Long> loginVoteCountMap(List<Survey> surveys);
+
+    Map<Long, Long> anyVoteCountMap(List<Survey> surveys);
 
 
 }
