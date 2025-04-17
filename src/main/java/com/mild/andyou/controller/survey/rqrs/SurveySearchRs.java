@@ -1,6 +1,7 @@
 package com.mild.andyou.controller.survey.rqrs;
 
 import com.mild.andyou.domain.survey.Survey;
+import com.mild.andyou.domain.survey.SurveyType;
 import com.mild.andyou.domain.survey.Topic;
 import com.mild.andyou.utils.s3.S3FilePath;
 import com.mild.andyou.utils.s3.S3Utils;
@@ -18,6 +19,7 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class SurveySearchRs {
     private Long id;
+    private SurveyType type;
     private Topic topic;
     private String title;
     private ContentDto thumbnail;
@@ -30,11 +32,14 @@ public class SurveySearchRs {
                         option.getId(),
                         option.getText(),
                         ContentDto.create(option.getContentVo()),
+                        option.getIsCorrect(),
+                        FeedbackDto.create(option.getFeedback()),
                         0))
                 .collect(Collectors.toList());
 
         return new SurveySearchRs(
                 survey.getId(),
+                survey.getType(),
                 survey.getTopic(),
                 survey.getTitle(),
                 ContentDto.create(survey.getThumbnail()),

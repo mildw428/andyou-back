@@ -1,6 +1,8 @@
 package com.mild.andyou.controller.survey.rqrs;
 
 import com.mild.andyou.domain.survey.ContentType;
+import com.mild.andyou.domain.survey.FeedbackVo;
+import com.mild.andyou.domain.survey.SurveyType;
 import com.mild.andyou.domain.survey.Topic;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -16,11 +18,13 @@ import java.util.List;
 @AllArgsConstructor
 public class SurveySaveRq {
     private Topic topic;
+    private SurveyType type;
     private String title;
     private String description;
     private ContentDto thumbnail;
     private ContentDto content;
     private List<OptionSaveRq> options;
+    private FeedbackDto incorrectFeedback;
 
     public List<String> getFileNames() {
 
