@@ -30,6 +30,11 @@ public class SurveyOption {
     @Embedded
     private ContentVo contentVo;
 
+    private Boolean isCorrect;
+
+    @Embedded
+    private FeedbackVo feedback;
+
     @OneToMany(mappedBy = "option", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<SurveyResponse> responses = new ArrayList<>();
 
@@ -39,13 +44,16 @@ public class SurveyOption {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
-    public SurveyOption(String text, ContentVo contentVo) {
+    public SurveyOption(String text, ContentVo contentVo, Boolean isCorrect, FeedbackVo feedback) {
         this.text = text;
         this.contentVo = contentVo;
+        this.isCorrect = isCorrect;
+        this.feedback = feedback;
     }
 
-    public static SurveyOption craete(String text, ContentType contentType, String contentUrl) {
-        return new SurveyOption(text, new ContentVo(contentType, contentUrl));
+    public static SurveyOption craete(String text, ContentType contentType, String contentUrl,
+                                      Boolean isCorrect, FeedbackVo feedback) {
+        return new SurveyOption(text, ContentVo.create(contentType, contentUrl), isCorrect, feedback);
     }
 
     public void vote() {

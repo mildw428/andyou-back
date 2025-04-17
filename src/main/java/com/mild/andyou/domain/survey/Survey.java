@@ -25,6 +25,9 @@ public class Survey {
     @Enumerated(EnumType.STRING)
     private Topic topic;
 
+    @Enumerated(EnumType.STRING)
+    private SurveyType type;
+
     @Column(nullable = false, length = 50)
     private String title;
 
@@ -56,8 +59,9 @@ public class Survey {
     @OneToMany(mappedBy = "survey", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<SurveyOption> options = new ArrayList<>();
 
-    public Survey(Topic topic, String title, String description, String thumbnail, ContentVo contentVo, User createdBy) {
+    public Survey(Topic topic, SurveyType type, String title, String description, String thumbnail, ContentVo contentVo, User createdBy) {
         this.topic = topic;
+        this.type = type;
         this.title = title;
         this.description = description;
         this.thumbnail = thumbnail;
@@ -68,16 +72,16 @@ public class Survey {
 
     }
 
-    public static Survey create(Topic topic, String title, String description, String thumbnailUrl, ContentType contentType, String contentUrl) {
+    public static Survey create(Topic topic, SurveyType type, String title, String description, String thumbnailUrl, ContentType contentType, String contentUrl) {
         User user = new User(UserContextHolder.userId());
-        return new Survey(topic, title, description, thumbnailUrl, new ContentVo(contentType, contentUrl), user);
+        return new Survey(topic, type, title, description, thumbnailUrl, ContentVo.create(contentType, contentUrl), user);
     }
 
     public void update(String title, String description, String thumbnail, ContentType contentType, String content) {
         this.title = title;
         this.description = description;
         this.thumbnail = thumbnail;
-        this.contentVo = new ContentVo(contentType, content);
+        this.contentVo = ContentVo.create(contentType, content);
     }
 
     public void updateGptOpinion(String opinion) {
