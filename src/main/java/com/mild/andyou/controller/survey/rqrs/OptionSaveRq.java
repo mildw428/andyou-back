@@ -14,5 +14,5 @@ public class OptionSaveRq {
     private String text;
     private ContentDto content;
     private Boolean isCorrect;
-    private FeedbackDto correctFeedback;
+    private FeedbackDto feedback;
 }
