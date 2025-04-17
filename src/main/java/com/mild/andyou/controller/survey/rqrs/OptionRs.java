@@ -10,5 +10,7 @@ public class OptionRs {
     private Long id;
     private String text;
     private ContentDto content;
+    private Boolean isCorrect;
+    private FeedbackDto feedback;
     private int votes;
 }

@@ -70,10 +70,11 @@ public class SurveyRepositoryDslImpl extends QuerydslRepositorySupport implement
     }
 
     @Override
-    public Page<Survey> findByCreatedBy(Long userId, Pageable pageable) {
+    public Page<Survey> findByCreatedBy(Long userId, String keyword, Pageable pageable) {
         List<Survey> content = from(survey)
                 .where(
                         eqCreatedBy(userId),
+                        containKeyword(keyword),
                         survey.isDeleted.eq(false)
                 )
                 .offset(pageable.getOffset())

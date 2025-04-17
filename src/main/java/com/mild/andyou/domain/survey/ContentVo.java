@@ -16,8 +16,12 @@ public class ContentVo {
 
     private String content;
 
-    public ContentVo(ContentType contentType, String content) {
+    private ContentVo(ContentType contentType, String content) {
         this.contentType = contentType;
         this.content = content;
+    }
+
+    public static ContentVo create(ContentType contentType, String content) {
+        return new ContentVo(contentType, content);
     }
 }

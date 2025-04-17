@@ -56,6 +56,7 @@ public class SurveyService {
     public SurveySaveRs saveSurvey(SurveySaveRq rq) {
         Survey survey = Survey.create(
                 rq.getTopic(),
+                rq.getType(),
                 rq.getTitle(),
                 rq.getDescription(),
                 rq.getThumbnail().getFileName(),
@@ -66,7 +67,9 @@ public class SurveyService {
         List<SurveyOption> surveyOptions = rq.getOptions().stream().map(o -> SurveyOption.craete(
                 o.getText(),
                 o.getContent().getContentType(),
-                o.getContent().getContentType() == ContentType.YOUTUBE ? o.getContent().getPath() : o.getContent().getFileName()
+                o.getContent().getContentType() == ContentType.YOUTUBE ? o.getContent().getPath() : o.getContent().getFileName(),
+                o.getIsCorrect(),
+                o.getIsCorrect() == null ? null : o.getIsCorrect() ? o.getFeedback().of() : rq.getIncorrectFeedback().of()
         )).collect(Collectors.toList());
 
         survey.setOptions(surveyOptions);
@@ -91,7 +94,9 @@ public class SurveyService {
         List<SurveyOption> surveyOptions = rq.getOptions().stream().map(o -> SurveyOption.craete(
                 o.getText(),
                 o.getContent().getContentType(),
-                o.getContent().getContentType() == ContentType.YOUTUBE ? o.getContent().getPath() : o.getContent().getFileName()
+                o.getContent().getContentType() == ContentType.YOUTUBE ? o.getContent().getPath() : o.getContent().getFileName(),
+                o.getIsCorrect(),
+                o.getIsCorrect() == null ? null : o.getIsCorrect() ? o.getFeedback().of() : rq.getIncorrectFeedback().of()
         )).collect(Collectors.toList());
 
         survey.update(
@@ -116,11 +121,11 @@ public class SurveyService {
         survey.delete();
     }
 
-    public Page<SurveySearchRs> getMySurveys(PageRq pageRq) {
+    public Page<SurveySearchRs> getMySurveys(String keyword, PageRq pageRq) {
         if (UserContextHolder.userId() == null) {
             throw new RuntimeException();
         }
-        Page<Survey> surveys = surveyRepository.findByCreatedBy(UserContextHolder.userId(), pageRq.toPageable());
+        Page<Survey> surveys = surveyRepository.findByCreatedBy(UserContextHolder.userId(), keyword, pageRq.toPageable());
         Map<Long, Long> countMap = surveyRepository.countMap(surveys.getContent());
 
         return surveys.map(s-> SurveySearchRs.convertToSurveyRs(s, countMap.get(s.getId())));
