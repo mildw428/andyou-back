@@ -105,8 +105,11 @@ public class Survey {
         if (optionOpt.isEmpty()) {
             return false;
         }
-
-        optionOpt.get().vote();
+        if(UserContextHolder.userId() != null) {
+            optionOpt.get().vote();
+        }else {
+            optionOpt.get().voteAny();
+        }
         return true;
     }
 

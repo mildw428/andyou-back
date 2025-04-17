@@ -7,11 +7,16 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-@AllArgsConstructor
 public class UserContext {
     private Long userId;
+    private String ip;
 
-    public UserContext(User user) {
+    public UserContext(String ip) {
+        this.ip = ip;
+    }
+
+    public UserContext(User user, String ip) {
         this.userId = user.getId();
+        this.ip = ip;
     }
 }
