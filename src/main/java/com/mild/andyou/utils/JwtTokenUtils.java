@@ -33,14 +33,14 @@ public class JwtTokenUtils {
     private static Date getAccessExp(Date iat) {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(iat);
-        calendar.add(Calendar.HOUR_OF_DAY, 2);
+        calendar.add(Calendar.DAY_OF_MONTH, 2);
         return calendar.getTime();
     }
 
     private static Date getRefreshExp(Date iat) {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(iat);
-        calendar.add(Calendar.DAY_OF_WEEK, 7);
+        calendar.add(Calendar.DAY_OF_MONTH, 7);
         return calendar.getTime();
     }
 
