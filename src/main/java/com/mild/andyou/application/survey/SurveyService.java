@@ -96,7 +96,7 @@ public class SurveyService {
                 o.getContent().getContentType(),
                 o.getContent().getContentType() == ContentType.YOUTUBE ? o.getContent().getPath() : o.getContent().getFileName(),
                 o.getIsCorrect(),
-                o.getIsCorrect() ? o.getFeedback().of() : rq.getIncorrectFeedback().of()
+                o.getIsCorrect() == null ? null : o.getIsCorrect() ? o.getFeedback().of() : rq.getIncorrectFeedback().of()
         )).collect(Collectors.toList());
 
         survey.update(
