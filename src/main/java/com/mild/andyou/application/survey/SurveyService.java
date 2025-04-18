@@ -64,12 +64,14 @@ public class SurveyService {
                 rq.getContent().getContentType() == ContentType.YOUTUBE ? rq.getContent().getPath() : rq.getContent().getFileName()
         );
 
+        FeedbackVo incorrectFeedback = rq.getIncorrectFeedback() == null ? null : rq.getIncorrectFeedback().of();
+
         List<SurveyOption> surveyOptions = rq.getOptions().stream().map(o -> SurveyOption.craete(
                 o.getText(),
                 o.getContent().getContentType(),
                 o.getContent().getContentType() == ContentType.YOUTUBE ? o.getContent().getPath() : o.getContent().getFileName(),
                 o.getIsCorrect(),
-                o.getIsCorrect() == null ? null : o.getIsCorrect() ? o.getFeedback().of() : rq.getIncorrectFeedback().of()
+                o.getIsCorrect() == null ? null : o.getIsCorrect() ? o.getFeedback().of() : incorrectFeedback
         )).collect(Collectors.toList());
 
         survey.setOptions(surveyOptions);
@@ -91,12 +93,14 @@ public class SurveyService {
             throw new RuntimeException();
         }
 
+        FeedbackVo incorrectFeedback = rq.getIncorrectFeedback() == null ? null : rq.getIncorrectFeedback().of();
+
         List<SurveyOption> surveyOptions = rq.getOptions().stream().map(o -> SurveyOption.craete(
                 o.getText(),
                 o.getContent().getContentType(),
                 o.getContent().getContentType() == ContentType.YOUTUBE ? o.getContent().getPath() : o.getContent().getFileName(),
                 o.getIsCorrect(),
-                o.getIsCorrect() == null ? null : o.getIsCorrect() ? o.getFeedback().of() : rq.getIncorrectFeedback().of()
+                o.getIsCorrect() == null ? null : o.getIsCorrect() ? o.getFeedback().of() : incorrectFeedback
         )).collect(Collectors.toList());
 
         survey.update(
