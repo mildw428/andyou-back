@@ -17,9 +17,9 @@ public class ChainCandidateOptionsRs {
 
     List<ChainCandidateSurveyDto> surveys;
 
-    public static ChainCandidateOptionsRs create(List<Survey> surveys) {
+    public static ChainCandidateOptionsRs create(List<Survey> surveys, Long chainSurveyId) {
         List<ChainCandidateSurveyDto> surveyDtos = surveys.stream()
-                .map(ChainCandidateSurveyDto::create)
+                .map(s->ChainCandidateSurveyDto.create(s, chainSurveyId))
                 .toList();
 
         return new ChainCandidateOptionsRs(surveyDtos);

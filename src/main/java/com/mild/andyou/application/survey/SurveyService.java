@@ -212,8 +212,8 @@ public class SurveyService {
         return SurveyVoteRs.convertToSurveyRs(survey, rq.getOptionId(), sum);
     }
 
-    public ChainCandidateOptionsRs chainCandidateOptions() {
-        List<Survey> surveys = surveyRepository.findChainCandidateSurvey();
-        return ChainCandidateOptionsRs.create(surveys);
+    public ChainCandidateOptionsRs chainCandidateOptions(Long id) {
+        List<Survey> surveys = surveyRepository.findChainCandidateSurvey(id);
+        return ChainCandidateOptionsRs.create(surveys, id);
     }
 }

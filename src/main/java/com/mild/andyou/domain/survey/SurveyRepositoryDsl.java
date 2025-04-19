@@ -16,7 +16,7 @@ public interface SurveyRepositoryDsl {
 
     Map<Long, Long> anyVoteCountMap(List<Survey> surveys);
 
-    List<Survey> findChainCandidateSurvey();
+    List<Survey> findChainCandidateSurvey(Long surveyId);
 
 
 }

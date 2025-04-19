@@ -5,7 +5,6 @@ import com.mild.andyou.controller.survey.rqrs.SortOrder;
 import com.querydsl.core.Tuple;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
-import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.PathBuilder;
 import org.springframework.data.domain.Page;
@@ -15,11 +14,9 @@ import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport
 
 import org.springframework.data.domain.Pageable;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.mild.andyou.domain.survey.QSurvey.survey;
@@ -145,16 +142,24 @@ public class SurveyRepositoryDslImpl extends QuerydslRepositorySupport implement
     }
 
     @Override
-    public List<Survey> findChainCandidateSurvey() {
+    public List<Survey> findChainCandidateSurvey(Long surveyId) {
         return from(survey)
                 .rightJoin(survey.options, surveyOption).fetchJoin()
                 .where(
                         survey.createdBy.id.eq(UserContextHolder.userId()),
-                        surveyOption.chainSurveyId.isNull(),
+                        survey.id.ne(surveyId),
+                        surveyOption.chainSurveyId.isNull().or(eqSurveyId(surveyId)),
                         survey.isDeleted.isFalse()
                 )
                 .orderBy(survey.createdAt.desc())
                 .fetch();
+    }
+
+    private static BooleanExpression eqSurveyId(Long surveyId) {
+        if(surveyId == null) {
+            return null;
+        }
+        return surveyOption.chainSurveyId.eq(surveyId);
     }
 
 

@@ -17,9 +17,9 @@ public class ChainCandidateSurveyDto {
     private String title;
     private List<ChainCandidateSurveyOptionDto> options;
 
-    public static ChainCandidateSurveyDto create(Survey survey) {
+    public static ChainCandidateSurveyDto create(Survey survey, Long chainSurveyId) {
         List<ChainCandidateSurveyOptionDto> optionDtos = survey.getOptions().stream()
-                .filter(o->o.getChainSurveyId() == null)
+                .filter(o->o.getChainSurveyId() == null || chainSurveyId.equals(o.getChainSurveyId()))
                 .map(ChainCandidateSurveyOptionDto::create)
                 .toList();
         return new ChainCandidateSurveyDto(

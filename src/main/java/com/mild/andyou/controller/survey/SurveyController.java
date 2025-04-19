@@ -54,8 +54,8 @@ public class SurveyController {
     }
 
     @GetMapping("/chainable")
-    public ResponseEntity<ChainCandidateOptionsRs> chainCandidateOptions() {
-        return ResponseEntity.ok(surveyService.chainCandidateOptions());
+    public ResponseEntity<ChainCandidateOptionsRs> chainCandidateOptions(@RequestParam @Nullable Long surveyId) {
+        return ResponseEntity.ok(surveyService.chainCandidateOptions(surveyId));
     }
 
     // ID로 설문 상세 조회
