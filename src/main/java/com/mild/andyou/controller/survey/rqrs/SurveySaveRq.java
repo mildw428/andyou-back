@@ -17,6 +17,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SurveySaveRq {
+    private Long chainOptionId;
     private Topic topic;
     private SurveyType type;
     private String title;

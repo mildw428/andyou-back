@@ -53,6 +53,11 @@ public class SurveyController {
         return ResponseEntity.ok(PageResponse.from(surveyService.getMySurveys(keyword, pageRq)));
     }
 
+    @GetMapping("/chainable")
+    public ResponseEntity<ChainCandidateOptionsRs> chainCandidateOptions(@RequestParam @Nullable Long surveyId) {
+        return ResponseEntity.ok(surveyService.chainCandidateOptions(surveyId));
+    }
+
     // ID로 설문 상세 조회
     @GetMapping("/{id}")
     public ResponseEntity<SurveyRs> getSurveyById(@PathVariable Long id) {
@@ -76,7 +81,7 @@ public class SurveyController {
 
     // 설문 참여(투표)
     @PostMapping("/{surveyId}/vote")
-    public ResponseEntity<SurveyRs> voteSurvey(
+    public ResponseEntity<SurveyVoteRs> voteSurvey(
             @PathVariable Long surveyId,
             @RequestBody SurveyVoteRq rq) {
         return ResponseEntity.ok(surveyService.voteSurvey(surveyId, rq));

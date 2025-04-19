@@ -1,10 +1,10 @@
 package com.mild.andyou.domain.survey;
 
+import com.mild.andyou.config.filter.UserContextHolder;
 import com.mild.andyou.controller.survey.rqrs.SortOrder;
 import com.querydsl.core.Tuple;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
-import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.PathBuilder;
 import org.springframework.data.domain.Page;
@@ -14,14 +14,13 @@ import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport
 
 import org.springframework.data.domain.Pageable;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.mild.andyou.domain.survey.QSurvey.survey;
+import static com.mild.andyou.domain.survey.QSurveyOption.surveyOption;
 import static com.mild.andyou.domain.survey.QSurveyResponse.surveyResponse;
 import static com.mild.andyou.domain.survey.QSurveyResponseAny.surveyResponseAny;
 
@@ -47,11 +46,17 @@ public class SurveyRepositoryDslImpl extends QuerydslRepositorySupport implement
             };
         }
 
+        QSurvey survey = QSurvey.survey;
+        QSurveyOption cs = new QSurveyOption("cs");
+
         // 콘텐츠 쿼리
         List<Survey> content = from(survey)
+                .leftJoin(cs)
+                .on(cs.chainSurveyId.eq(survey.id))
                 .where(
                         containKeyword(keyword),
                         eqTopic(topic),
+                        cs.id.isNull(),
                         survey.isDeleted.eq(false)
                 )
                 .offset(pageable.getOffset())
@@ -135,6 +140,28 @@ public class SurveyRepositoryDslImpl extends QuerydslRepositorySupport implement
                         tuple -> tuple.get(1, Long.class)
                 ));
     }
+
+    @Override
+    public List<Survey> findChainCandidateSurvey(Long surveyId) {
+        return from(survey)
+                .rightJoin(survey.options, surveyOption).fetchJoin()
+                .where(
+                        survey.createdBy.id.eq(UserContextHolder.userId()),
+                        survey.id.ne(surveyId),
+                        surveyOption.chainSurveyId.isNull().or(eqSurveyId(surveyId)),
+                        survey.isDeleted.isFalse()
+                )
+                .orderBy(survey.createdAt.desc())
+                .fetch();
+    }
+
+    private static BooleanExpression eqSurveyId(Long surveyId) {
+        if(surveyId == null) {
+            return null;
+        }
+        return surveyOption.chainSurveyId.eq(surveyId);
+    }
+
 
     private BooleanExpression eqTopic(Topic topic) {
         if (topic == null) {
