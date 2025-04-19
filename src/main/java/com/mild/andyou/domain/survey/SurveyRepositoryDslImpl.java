@@ -147,12 +147,19 @@ public class SurveyRepositoryDslImpl extends QuerydslRepositorySupport implement
                 .rightJoin(survey.options, surveyOption).fetchJoin()
                 .where(
                         survey.createdBy.id.eq(UserContextHolder.userId()),
-                        survey.id.ne(surveyId),
+                        neSurveyId(surveyId),
                         surveyOption.chainSurveyId.isNull().or(eqSurveyId(surveyId)),
                         survey.isDeleted.isFalse()
                 )
                 .orderBy(survey.createdAt.desc())
                 .fetch();
+    }
+
+    private static BooleanExpression neSurveyId(Long surveyId) {
+        if(surveyId == null) {
+            return null;
+        }
+        return survey.id.ne(surveyId);
     }
 
     private static BooleanExpression eqSurveyId(Long surveyId) {
