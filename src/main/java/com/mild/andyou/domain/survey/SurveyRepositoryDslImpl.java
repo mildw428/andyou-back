@@ -141,10 +141,14 @@ public class SurveyRepositoryDslImpl extends QuerydslRepositorySupport implement
     @Override
     public List<Survey> findChainCandidateSurvey() {
         return from(survey)
-                .rightJoin(survey.options, surveyOption).on(surveyOption.chainSurveyId.isNull()).fetchJoin()
+                .rightJoin(survey.options, surveyOption).fetchJoin()
                 .where(
-                        survey.createdBy.id.eq(UserContextHolder.userId())
-                ).fetch();
+                        survey.createdBy.id.eq(UserContextHolder.userId()),
+                        surveyOption.chainSurveyId.isNull(),
+                        survey.isDeleted.isFalse()
+                )
+                .orderBy(survey.createdAt.desc())
+                .fetch();
     }
 
 

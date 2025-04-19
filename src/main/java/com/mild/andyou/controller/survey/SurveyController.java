@@ -53,7 +53,7 @@ public class SurveyController {
         return ResponseEntity.ok(PageResponse.from(surveyService.getMySurveys(keyword, pageRq)));
     }
 
-    @GetMapping("/options/chain/candidate")
+    @GetMapping("/chainable")
     public ResponseEntity<ChainCandidateOptionsRs> chainCandidateOptions() {
         return ResponseEntity.ok(surveyService.chainCandidateOptions());
     }
