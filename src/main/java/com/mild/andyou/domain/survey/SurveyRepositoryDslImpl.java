@@ -1,5 +1,6 @@
 package com.mild.andyou.domain.survey;
 
+import com.mild.andyou.config.filter.UserContextHolder;
 import com.mild.andyou.controller.survey.rqrs.SortOrder;
 import com.querydsl.core.Tuple;
 import com.querydsl.core.types.Order;
@@ -22,6 +23,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.mild.andyou.domain.survey.QSurvey.survey;
+import static com.mild.andyou.domain.survey.QSurveyOption.surveyOption;
 import static com.mild.andyou.domain.survey.QSurveyResponse.surveyResponse;
 import static com.mild.andyou.domain.survey.QSurveyResponseAny.surveyResponseAny;
 
@@ -135,6 +137,16 @@ public class SurveyRepositoryDslImpl extends QuerydslRepositorySupport implement
                         tuple -> tuple.get(1, Long.class)
                 ));
     }
+
+    @Override
+    public List<Survey> findChainCandidateSurvey() {
+        return from(survey)
+                .rightJoin(survey.options, surveyOption).on(surveyOption.chainSurveyId.isNull()).fetchJoin()
+                .where(
+                        survey.createdBy.id.eq(UserContextHolder.userId())
+                ).fetch();
+    }
+
 
     private BooleanExpression eqTopic(Topic topic) {
         if (topic == null) {

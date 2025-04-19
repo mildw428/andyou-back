@@ -35,6 +35,8 @@ public class SurveyOption {
     @Embedded
     private FeedbackVo feedback;
 
+    private Long chainSurveyId;
+
     @OneToMany(mappedBy = "option", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<SurveyResponse> responses = new ArrayList<>();
 
@@ -81,5 +83,9 @@ public class SurveyOption {
 
     public void setSurvey(Survey survey) {
         this.survey = survey;
+    }
+
+    public void updateChainSurveyId(Long id) {
+        this.chainSurveyId = id;
     }
 }

@@ -27,6 +27,7 @@ public class SurveyService {
 
     private final BucketProperties bucketProperties;
     private final SurveyRepository surveyRepository;
+    private final SurveyOptionRepository surveyOptionRepository;
     private final SurveyContentRepository surveyContentRepository;
     private final UserRepository userRepository;
     private final SurveyResponseRepository surveyResponseRepository;
@@ -54,6 +55,7 @@ public class SurveyService {
 
     @Transactional
     public SurveySaveRs saveSurvey(SurveySaveRq rq) {
+
         Survey survey = Survey.create(
                 rq.getTopic(),
                 rq.getType(),
@@ -80,6 +82,11 @@ public class SurveyService {
         List<String> fileNames = rq.getFileNames();
         List<SurveyContent> surveyContents = surveyContentRepository.findAllByFileNameIn(fileNames);
         surveyContents.forEach(c->c.updateStatus(survey));
+
+        if(rq.getChainOptionId() != null) {
+            SurveyOption surveyOption = surveyOptionRepository.findById(rq.getChainOptionId()).orElseThrow();
+            surveyOption.updateChainSurveyId(survey.getId());
+        }
 
         return new SurveySaveRs(survey.getId());
     }
@@ -138,6 +145,9 @@ public class SurveyService {
     }
 
     public SurveyRs getSurveyById(Long id) {
+        Optional<SurveyOption> chainOptionOpt = surveyOptionRepository.findByChainSurveyId(id);
+        Long chainOptionId = chainOptionOpt.map(SurveyOption::getId).orElse(null);
+
         Survey survey = surveyRepository.findByIdAndIsDeletedFalse(id).orElseThrow();
 
         Optional<SurveyResponse> responseOpt = Optional.empty();
@@ -151,7 +161,7 @@ public class SurveyService {
         Map<Long, Long> anyVoteCountMap = surveyRepository.anyVoteCountMap(List.of(survey));
         Long sum = loginVoteCountMap.get(id) + anyVoteCountMap.get(id);
 
-        return SurveyRs.convertToSurveyRs(survey, selectedId, sum);
+        return SurveyRs.convertToSurveyRs(chainOptionId, survey, selectedId, sum);
     }
 
     @Transactional
@@ -177,7 +187,7 @@ public class SurveyService {
     }
 
     @Transactional
-    public SurveyRs voteSurvey(Long surveyId, SurveyVoteRq rq) {
+    public SurveyVoteRs voteSurvey(Long surveyId, SurveyVoteRq rq) {
         Optional<Survey> surveyOpt = surveyRepository.findByIdAndIsDeletedFalse(surveyId);
         if (surveyOpt.isEmpty()) {
             return null;
@@ -189,7 +199,11 @@ public class SurveyService {
         Long sum = loginVoteCountMap.get(surveyId) + anyVoteCountMap.get(surveyId);
 
         survey.updateVoteCount(sum.intValue());
-        return SurveyRs.convertToSurveyRs(survey, rq.getOptionId(), sum);
+        return SurveyVoteRs.convertToSurveyRs(survey, rq.getOptionId(), sum);
     }
 
+    public ChainCandidateOptionsRs chainCandidateOptions() {
+        List<Survey> surveys = surveyRepository.findChainCandidateSurvey();
+        return ChainCandidateOptionsRs.create(surveys);
+    }
 }
