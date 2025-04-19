@@ -49,11 +49,17 @@ public class SurveyRepositoryDslImpl extends QuerydslRepositorySupport implement
             };
         }
 
+        QSurvey survey = QSurvey.survey;
+        QSurveyOption cs = new QSurveyOption("cs");
+
         // 콘텐츠 쿼리
         List<Survey> content = from(survey)
+                .leftJoin(cs)
+                .on(cs.chainSurveyId.eq(survey.id))
                 .where(
                         containKeyword(keyword),
                         eqTopic(topic),
+                        cs.id.isNull(),
                         survey.isDeleted.eq(false)
                 )
                 .offset(pageable.getOffset())
