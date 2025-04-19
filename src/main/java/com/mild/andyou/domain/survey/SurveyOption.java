@@ -88,4 +88,7 @@ public class SurveyOption {
     public void updateChainSurveyId(Long id) {
         this.chainSurveyId = id;
     }
+    public void deleteChainSurvey() {
+        this.chainSurveyId = null;
+    }
 }

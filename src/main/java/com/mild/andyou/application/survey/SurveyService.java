@@ -93,6 +93,9 @@ public class SurveyService {
 
     @Transactional
     public SurveySaveRs updateSurvey(Long id, SurveySaveRq rq) {
+        Optional<SurveyOption> chainOptionOpt = surveyOptionRepository.findByChainSurveyId(id);
+        chainOptionOpt.ifPresent(SurveyOption::deleteChainSurvey);
+
         Survey survey = surveyRepository.findByIdAndIsDeletedFalse(id).orElseThrow();
         Optional<SurveyResponse> surveyResponseOpt = surveyResponseRepository.findFirstBySurvey(survey);
 
@@ -123,6 +126,11 @@ public class SurveyService {
         List<SurveyContent> surveyContents = surveyContentRepository.findAllByFileNameIn(fileNames);
         surveyContents.forEach(c->c.updateStatus(survey));
 
+        if(rq.getChainOptionId() != null) {
+            SurveyOption surveyOption = surveyOptionRepository.findById(rq.getChainOptionId()).orElseThrow();
+            surveyOption.updateChainSurveyId(survey.getId());
+        }
+
         return new SurveySaveRs(survey.getId());
     }
 
@@ -130,6 +138,8 @@ public class SurveyService {
     public void deleteSurvey(Long id) {
         Survey survey = surveyRepository.findById(id).orElseThrow();
         survey.delete();
+        Optional<SurveyOption> chainOptionOpt = surveyOptionRepository.findByChainSurveyId(id);
+        chainOptionOpt.ifPresent(SurveyOption::deleteChainSurvey);
     }
 
     public Page<SurveySearchRs> getMySurveys(String keyword, PageRq pageRq) {
