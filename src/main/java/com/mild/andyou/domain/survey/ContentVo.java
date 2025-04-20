@@ -6,6 +6,8 @@ import jakarta.persistence.Enumerated;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.Optional;
+
 @Getter
 @Embeddable
 @NoArgsConstructor
@@ -23,5 +25,12 @@ public class ContentVo {
 
     public static ContentVo create(ContentType contentType, String content) {
         return new ContentVo(contentType, content);
+    }
+
+    public Optional<String> getImageFileName() {
+        if(this.contentType == ContentType.IMAGE) {
+            return Optional.ofNullable(content);
+        }
+        return Optional.empty();
     }
 }

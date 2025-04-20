@@ -76,9 +76,11 @@ public class SurveyService {
         survey.setOptions(surveyOptions);
         surveyRepository.save(survey);
 
-        List<String> fileNames = rq.getOptions().stream()
-                .filter(o-> o.getContent().getContentType() == ContentType.IMAGE && o.getContent() != null)
-                .map(o->o.getContent().getFileName()).toList();
+        List<String> fileNames = new ArrayList<>();
+        for (SurveyOption surveyOption : surveyOptions) {
+            surveyOption.getContentVo().getImageFileName().ifPresent(fileNames::add);
+            surveyOption.getFeedback().getImageFileName().ifPresent(fileNames::add);
+        }
 
         List<SurveyContent> surveyContents = surveyContentRepository.findAllByFileNameIn(fileNames);
         surveyContents.forEach(c->c.updateStatus(survey));
