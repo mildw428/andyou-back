@@ -53,7 +53,7 @@ public class Survey {
     @OneToMany(mappedBy = "survey", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<SurveyOption> options = new ArrayList<>();
 
-    public Survey(Topic topic, SurveyType type, String title, String description, String thumbnail, ContentVo contentVo, User createdBy) {
+    public Survey(Topic topic, SurveyType type, String title, String description, User createdBy) {
         this.topic = topic;
         this.type = type;
         this.title = title;
@@ -64,12 +64,12 @@ public class Survey {
 
     }
 
-    public static Survey create(Topic topic, SurveyType type, String title, String description, String thumbnailUrl, ContentType contentType, String contentUrl) {
+    public static Survey create(Topic topic, SurveyType type, String title, String description) {
         User user = new User(UserContextHolder.userId());
-        return new Survey(topic, type, title, description, thumbnailUrl, ContentVo.create(contentType, contentUrl), user);
+        return new Survey(topic, type, title, description, user);
     }
 
-    public void update(String title, String description, String thumbnail, ContentType contentType, String content) {
+    public void update(String title, String description) {
         this.title = title;
         this.description = description;
     }

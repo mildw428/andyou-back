@@ -22,29 +22,7 @@ public class SurveySaveRq {
     private SurveyType type;
     private String title;
     private String description;
-    private ContentDto thumbnail;
-    private ContentDto content;
     private List<OptionSaveRq> options;
     private FeedbackDto incorrectFeedback;
 
-    public List<String> getFileNames() {
-
-        List<String> fileNames = new ArrayList<>();
-        if (this.getThumbnail().getContentType() == ContentType.IMAGE) {
-            fileNames.add(this.getContent().getFileName());
-        }
-
-        if (this.content.getContentType() == ContentType.IMAGE && this.getContent() != null) {
-            fileNames.add(this.getContent().getFileName());
-        }
-
-        this.getOptions().forEach(o -> {
-            if (o.getContent().getContentType() == ContentType.IMAGE && o.getContent() != null) {
-                fileNames.add(o.getContent().getFileName());
-            }
-        });
-
-        return fileNames;
-
-    }
 }
