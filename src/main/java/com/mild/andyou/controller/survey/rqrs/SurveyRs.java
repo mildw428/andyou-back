@@ -20,10 +20,8 @@ public class SurveyRs {
     private Long id;
     private SurveyType type;
     private Topic topic;
-    private ContentDto thumbnail;
     private String title;
     private String description;
-    private ContentDto content;
     private Long optionId;
     private Long participantCount;
     private List<OptionRs> options = new ArrayList<>();
@@ -50,10 +48,8 @@ public class SurveyRs {
                 survey.getId(),
                 survey.getType(),
                 survey.getTopic(),
-                ContentDto.create(survey.getThumbnail()),
                 survey.getTitle(),
                 survey.getDescription(),
-                ContentDto.create(survey.getContentVo()),
                 optionId,
                 participantCount,
                 optionRsList,

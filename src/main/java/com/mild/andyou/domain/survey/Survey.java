@@ -34,12 +34,6 @@ public class Survey {
     @Column(length = 500)
     private String description;
 
-    @Column(length = 500)
-    private String thumbnail;
-
-    @Embedded
-    private ContentVo contentVo;
-
     private String gptOpinion;
 
     private Integer voteCount;
@@ -64,8 +58,6 @@ public class Survey {
         this.type = type;
         this.title = title;
         this.description = description;
-        this.thumbnail = thumbnail;
-        this.contentVo = contentVo;
         this.createdBy = createdBy;
         this.isDeleted = false;
         this.voteCount = 0;
@@ -80,8 +72,6 @@ public class Survey {
     public void update(String title, String description, String thumbnail, ContentType contentType, String content) {
         this.title = title;
         this.description = description;
-        this.thumbnail = thumbnail;
-        this.contentVo = ContentVo.create(contentType, content);
     }
 
     public void updateGptOpinion(String opinion) {

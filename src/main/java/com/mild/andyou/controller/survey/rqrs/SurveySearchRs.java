@@ -22,7 +22,6 @@ public class SurveySearchRs {
     private SurveyType type;
     private Topic topic;
     private String title;
-    private ContentDto thumbnail;
     private Long participantCount;
     private List<OptionRs> options = new ArrayList<>();
 
@@ -43,7 +42,6 @@ public class SurveySearchRs {
                 survey.getType(),
                 survey.getTopic(),
                 survey.getTitle(),
-                ContentDto.create(survey.getThumbnail()),
                 participantCount,
                 optionRsList
         );
