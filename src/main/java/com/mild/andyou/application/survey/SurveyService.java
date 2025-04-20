@@ -60,10 +60,7 @@ public class SurveyService {
                 rq.getTopic(),
                 rq.getType(),
                 rq.getTitle(),
-                rq.getDescription(),
-                rq.getThumbnail().getFileName(),
-                rq.getContent().getContentType(),
-                rq.getContent().getContentType() == ContentType.YOUTUBE ? rq.getContent().getPath() : rq.getContent().getFileName()
+                rq.getDescription()
         );
 
         FeedbackVo incorrectFeedback = rq.getIncorrectFeedback() == null ? null : rq.getIncorrectFeedback().of();
@@ -79,7 +76,10 @@ public class SurveyService {
         survey.setOptions(surveyOptions);
         surveyRepository.save(survey);
 
-        List<String> fileNames = rq.getFileNames();
+        List<String> fileNames = rq.getOptions().stream()
+                .filter(o-> o.getContent().getContentType() == ContentType.IMAGE && o.getContent() != null)
+                .map(o->o.getContent().getFileName()).toList();
+
         List<SurveyContent> surveyContents = surveyContentRepository.findAllByFileNameIn(fileNames);
         surveyContents.forEach(c->c.updateStatus(survey));
 
@@ -115,14 +115,13 @@ public class SurveyService {
 
         survey.update(
                 rq.getTitle(),
-                rq.getDescription(),
-                rq.getThumbnail().getFileName(),
-                rq.getContent().getContentType(),
-                rq.getContent().getContentType() == ContentType.YOUTUBE ? rq.getContent().getPath() : rq.getContent().getFileName()
+                rq.getDescription()
         );
         survey.setOptions(surveyOptions);
 
-        List<String> fileNames = rq.getFileNames();
+        List<String> fileNames = rq.getOptions().stream()
+                .filter(o-> o.getContent().getContentType() == ContentType.IMAGE && o.getContent() != null)
+                .map(o->o.getContent().getFileName()).toList();
         List<SurveyContent> surveyContents = surveyContentRepository.findAllByFileNameIn(fileNames);
         surveyContents.forEach(c->c.updateStatus(survey));
 
