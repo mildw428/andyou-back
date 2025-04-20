@@ -32,10 +32,4 @@ public class ContentDto {
         }
         return new ContentDto(contentVo.getContentType(), path, fileName);
     }
-
-    public ContentVo of() {
-        String content = this.contentType == ContentType.YOUTUBE ? this.path : this.fileName;
-        return ContentVo.create(this.contentType, content);
-    }
-
 }

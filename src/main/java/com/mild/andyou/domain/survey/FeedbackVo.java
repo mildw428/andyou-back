@@ -8,6 +8,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.Optional;
+
 @Getter
 @Embeddable
 @NoArgsConstructor
@@ -31,6 +33,13 @@ public class FeedbackVo {
 
     public static FeedbackVo create(String text, ContentType contentType, String content) {
         return new FeedbackVo(text, contentType, content);
+    }
+
+    public Optional<String> getImageFileName() {
+        if(this.contentType == ContentType.IMAGE) {
+            return Optional.ofNullable(content);
+        }
+        return Optional.empty();
     }
 
 }
