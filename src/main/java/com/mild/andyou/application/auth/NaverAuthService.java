@@ -63,8 +63,6 @@ public class NaverAuthService {
             throw new RuntimeException("비활성 계정");
         }
 
-        user.updateNickname("사용자"+user.getId());
-
         TokenInfo tokenInfo = JwtTokenUtils.createToken(jwtProperties.getSecret(), user.getId().toString());
         user.updateRefresh(tokenInfo.getRefreshToken(), tokenInfo.getRefreshTokenExp());
 
@@ -112,6 +110,7 @@ public class NaverAuthService {
     @Transactional
     public TokenRs singUp(SignupRq rq) {
         User user = userRepository.findById(rq.getId()).orElseThrow();
+        user.updateNickname("사용자"+user.getId());
         user.singUp(rq.getBirthYear(), rq.getGender());
         TokenInfo tokenInfo = JwtTokenUtils.createToken(jwtProperties.getSecret(), user.getId().toString());
         user.updateRefresh(tokenInfo.getRefreshToken(), tokenInfo.getRefreshTokenExp());
