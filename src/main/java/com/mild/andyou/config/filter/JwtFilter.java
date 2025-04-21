@@ -30,13 +30,11 @@ public class JwtFilter extends OncePerRequestFilter {
             HttpServletRequest request, HttpServletResponse response, FilterChain filterChain
     ) throws ServletException, IOException {
 
-        String ip = request.getRemoteAddr();
-        String forwarded = request.getHeader("X-Forwarded-For");
-        if (forwarded != null) {
-            ip = forwarded.split(",")[0];
-        }
+        String ip = request.getHeader("X-Client-IP");
 
-        UserContextHolder.setUserContext(new UserContext(ip));
+        if(ip != null) {
+            UserContextHolder.setUserContext(new UserContext(ip));
+        }
 
         String token = null;
         try {
