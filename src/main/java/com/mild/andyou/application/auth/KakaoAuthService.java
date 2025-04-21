@@ -5,7 +5,7 @@ import com.mild.andyou.application.auth.dto.KakaoUserResponse;
 import com.mild.andyou.config.properties.JwtProperties;
 import com.mild.andyou.config.properties.KakaoProperties;
 import com.mild.andyou.controller.auth.rqrs.KakaoLoginRq;
-import com.mild.andyou.controller.user.rqrs.KakaoRefreshRq;
+import com.mild.andyou.controller.user.rqrs.RefreshRq;
 import com.mild.andyou.controller.user.rqrs.TokenRs;
 import com.mild.andyou.domain.user.User;
 import com.mild.andyou.domain.user.UserRepository;
@@ -52,15 +52,21 @@ public class KakaoAuthService {
         User user = userRepository.findBySocialTypeAndSocialId(User.SocialType.KAKAO, userResponse.getId())
                 .orElseGet(() -> userRepository.save(new User(User.SocialType.KAKAO, userResponse.getId())));
 
-        if(user.getNickname() == null || user.getNickname().isBlank()) {
-            user.updateNickname("사용자"+user.getId());
+        if(user.isNewUser()) {
+
         }
+
+        if (user.isSuspended()) {
+            throw new RuntimeException("비활성 계정");
+        }
+
+        user.updateNickname("사용자"+user.getId());
 
         TokenInfo tokenInfo = JwtTokenUtils.createToken(jwtProperties.getSecret(), user.getId().toString());
 
         user.updateRefresh(tokenInfo.getRefreshToken(), tokenInfo.getRefreshTokenExp());
 
-        return new TokenRs(tokenInfo, user.getNickname());
+        return new TokenRs(tokenInfo, user.getId(), user.getNickname(),user.getBirthYear(), user.getGender());
     }
 
     private KakaoTokenResponse getKakaoTokenResponse(KakaoLoginRq rq) {
@@ -101,7 +107,7 @@ public class KakaoAuthService {
     }
 
     @Transactional
-    public TokenRs kakaoRefresh(KakaoRefreshRq rq) {
+    public TokenRs refresh(RefreshRq rq) {
         String refreshToken = rq.getRefreshToken();
         Optional<User> userOpt = userRepository.findByRefreshToken(refreshToken);
 
@@ -118,7 +124,7 @@ public class KakaoAuthService {
         TokenInfo tokenInfo = JwtTokenUtils.createToken(jwtProperties.getSecret(), user.getId().toString());
         user.updateRefresh(tokenInfo.getRefreshToken(), tokenInfo.getRefreshTokenExp());
 
-        return new TokenRs(tokenInfo, user.getNickname());
+        return new TokenRs(tokenInfo, user.getId(), user.getNickname(), user.getBirthYear(), user.getGender());
 
     }
 }

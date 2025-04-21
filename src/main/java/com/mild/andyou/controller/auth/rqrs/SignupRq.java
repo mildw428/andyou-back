@@ -8,10 +8,10 @@ import lombok.Setter;
 @Getter @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserDto {
-    private Boolean isNewUser;
+public class SignupRq {
     private Long id;
-    private String nickname;
+    private Boolean privacyAgreed;
+    private Boolean termsAgreed;
     private String birthYear;
     private String gender;
 }

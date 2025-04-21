@@ -4,16 +4,15 @@ import com.mild.andyou.config.properties.JwtProperties;
 import com.mild.andyou.domain.user.User;
 import com.mild.andyou.domain.user.UserRepository;
 import com.mild.andyou.utils.JwtTokenUtils;
+import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import javax.security.sasl.AuthenticationException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -54,7 +53,7 @@ public class JwtFilter extends OncePerRequestFilter {
             }
             String id = JwtTokenUtils.getAudience(jwtProperties.getSecret(), token);
             Optional<User> userOpt = userRepository.findById(Long.valueOf(id));
-            if(userOpt.isPresent()) {
+            if (userOpt.isPresent()) {
                 UserContextHolder.setUserContext(new UserContext(userOpt.get(), ip));
             }
         }
@@ -63,13 +62,15 @@ public class JwtFilter extends OncePerRequestFilter {
 
         UserContextHolder.clear();
 
-
     }
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
         List<String> shouldNotFilterList = new ArrayList<>();
         shouldNotFilterList.add("/health");
+        shouldNotFilterList.add("/api/auth/kakao");
+        shouldNotFilterList.add("/api/auth/naver");
+        shouldNotFilterList.add("/api/auth/signup/complete");
 
         return shouldNotFilterList.contains(request.getRequestURI());
     }
