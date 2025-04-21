@@ -25,4 +25,8 @@ public class TokenInfo {
         this.refreshTokenExp = refreshTokenExp;
     }
 
+    public static TokenInfo create(String token, Date accessTokenExp, String refreshToken, Date refreshTokenExp) {
+        return new TokenInfo(token, accessTokenExp, refreshToken, refreshTokenExp);
+    }
+
 }

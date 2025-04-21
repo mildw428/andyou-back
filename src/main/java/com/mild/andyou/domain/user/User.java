@@ -30,8 +30,9 @@ public class User {
     @Column
     private String nickname;
 
-    @Column(length = 500)
-    private String profileImage;
+    private String birthYear;
+
+    private String gender;
 
     private String refreshToken;
 
@@ -40,11 +41,21 @@ public class User {
     @CreationTimestamp
     private LocalDateTime createdAt;
 
+    private Boolean isUse;
+
+    private LocalDateTime accountSuspended;
+
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
     public void updateNickname(String nickname) {
         this.nickname = nickname;
+    }
+
+    public void singUp(String birthYear, String gender) {
+        this.birthYear = birthYear;
+        this.gender = gender;
+        this.isUse=true;
     }
 
     public enum SocialType {
@@ -58,6 +69,7 @@ public class User {
     public User (SocialType type, String socialId) {
         this.socialType = type;
         this.socialId = socialId;
+        this.isUse = false;
     }
 
     public void updateRefresh(String refreshToken, Date refreshTokenExp) {
@@ -67,5 +79,16 @@ public class User {
 
     public Boolean isExp() {
         return LocalDateTime.now().isAfter(refreshExp);
+    }
+
+    public Boolean isSuspended() {
+        if(this.accountSuspended == null || LocalDateTime.now().isAfter(this.accountSuspended)) {
+            return false;
+        }
+        return true;
+    }
+
+    public Boolean isNewUser() {
+        return Boolean.FALSE.equals(this.isUse);
     }
 }

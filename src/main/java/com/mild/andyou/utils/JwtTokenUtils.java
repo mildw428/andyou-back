@@ -27,7 +27,7 @@ public class JwtTokenUtils {
                 .signWith(SignatureAlgorithm.HS512, jwtSecret)
                 .compact();
 
-        return new TokenInfo(token, accessTokenExp, refreshToken, refreshTokenExp);
+        return TokenInfo.create(token, accessTokenExp, refreshToken, refreshTokenExp);
     }
 
     private static Date getAccessExp(Date iat) {

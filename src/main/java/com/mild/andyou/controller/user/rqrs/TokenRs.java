@@ -16,11 +16,15 @@ public class TokenRs {
     private Date refreshTokenExp;
     private UserDto user;
 
-    public TokenRs(TokenInfo tokenInfo, String nickname) {
+    public TokenRs(Long userId, String nickname, String birthyear, String gender) {
+        this.user = new UserDto(true, userId, nickname, birthyear, gender);
+    }
+    public TokenRs(TokenInfo tokenInfo, Long userId, String nickname, String birthyear, String gender) {
         this.accessToken = tokenInfo.getAccessToken();
         this.accessTokenExp = tokenInfo.getAccessTokenExp();
         this.refreshToken = tokenInfo.getRefreshToken();
         this.refreshTokenExp = tokenInfo.getRefreshTokenExp();
-        this.user = new UserDto(nickname);
+        this.user = new UserDto(false, userId, nickname, birthyear, gender);
     }
+
 }

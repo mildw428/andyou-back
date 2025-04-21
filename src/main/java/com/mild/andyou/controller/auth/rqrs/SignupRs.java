@@ -5,13 +5,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Getter @Setter
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserDto {
-    private Boolean isNewUser;
-    private Long id;
-    private String nickname;
-    private String birthYear;
-    private String gender;
+public class SignupRs {
+    private Boolean success;
 }

@@ -8,6 +8,6 @@ import lombok.Setter;
 @Getter @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class KakaoRefreshRq {
+public class RefreshRq {
     private String refreshToken;
 }
