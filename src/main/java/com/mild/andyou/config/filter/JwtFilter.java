@@ -30,14 +30,10 @@ public class JwtFilter extends OncePerRequestFilter {
             HttpServletRequest request, HttpServletResponse response, FilterChain filterChain
     ) throws ServletException, IOException {
 
-        String forwarded = request.getHeader("X-Forwarded-For");
-        String clientIp = Optional.ofNullable(forwarded)
-                .map(ip -> ip.split(",")[0]) // 첫 번째 IP가 실제 클라이언트 IP
-                .orElse(request.getRemoteAddr());
+        String ip = request.getHeader("X-Client-IP");
 
-
-        if(clientIp != null) {
-            UserContextHolder.setUserContext(new UserContext(clientIp));
+        if(ip != null) {
+            UserContextHolder.setUserContext(new UserContext(ip));
         }
 
         String token = null;
@@ -56,7 +52,7 @@ public class JwtFilter extends OncePerRequestFilter {
             String id = JwtTokenUtils.getAudience(jwtProperties.getSecret(), token);
             Optional<User> userOpt = userRepository.findById(Long.valueOf(id));
             if (userOpt.isPresent()) {
-                UserContextHolder.setUserContext(new UserContext(userOpt.get(), clientIp));
+                UserContextHolder.setUserContext(new UserContext(userOpt.get(), ip));
             }
         }
 
