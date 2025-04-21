@@ -79,7 +79,9 @@ public class SurveyService {
         List<String> fileNames = new ArrayList<>();
         for (SurveyOption surveyOption : surveyOptions) {
             surveyOption.getContentVo().getImageFileName().ifPresent(fileNames::add);
-            surveyOption.getFeedback().getImageFileName().ifPresent(fileNames::add);
+            if(survey.getType() == SurveyType.QUIZ) {
+                surveyOption.getFeedback().getImageFileName().ifPresent(fileNames::add);
+            }
         }
 
         List<SurveyContent> surveyContents = surveyContentRepository.findAllByFileNameIn(fileNames);
