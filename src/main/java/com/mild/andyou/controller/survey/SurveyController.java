@@ -76,7 +76,7 @@ public class SurveyController {
             @RequestParam @Nullable String keyword,
             @RequestParam(required = false, defaultValue="NEWEST") SortOrder sortOrder,
             PageRq pageRq) {
-        return ResponseEntity.ok(PageResponse.from(surveyService.searchSurveys(topic, keyword, sortOrder, pageRq)));
+        return ResponseEntity.ok(surveyService.searchSurveys(topic, keyword, sortOrder, pageRq));
     }
 
     // 설문 참여(투표)
