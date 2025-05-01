@@ -6,8 +6,9 @@ import com.mild.andyou.utils.s3.S3FilePath;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-@Getter
+@Getter @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class FeedbackDto {
