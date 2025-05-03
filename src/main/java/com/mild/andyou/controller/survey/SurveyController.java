@@ -14,7 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api/surveys")
@@ -32,6 +32,16 @@ public class SurveyController {
     @PostMapping
     public ResponseEntity<SurveySaveRs> saveSurvey(@RequestBody SurveySaveRq rq) {
         return ResponseEntity.ok(surveyService.saveSurvey(rq));
+    }
+
+    @PostMapping("/{id}/ai-publish")
+    public ResponseEntity<SurveySaveRs> saveAISurvey(@PathVariable Long id) {
+        Queue<Long> queue = new LinkedList<>();
+        queue.addAll(surveyService.saveAISurvey(id));
+        while(!queue.isEmpty()) {
+            queue.addAll(surveyService.saveAISurvey(queue.poll()));
+        }
+        return ResponseEntity.ok().build();
     }
 
     @PatchMapping("/{id}")

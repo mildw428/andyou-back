@@ -1,13 +1,22 @@
 package com.mild.andyou.application.gpt;
 
-import com.mild.andyou.application.gpt.dto.GeminiContent;
 import com.mild.andyou.application.gpt.dto.GeminiRq;
 import com.mild.andyou.application.gpt.dto.GeminiRs;
 import com.mild.andyou.application.gpt.dto.RoleType;
+import com.mild.andyou.config.filter.UserContext;
+import com.mild.andyou.config.filter.UserContextHolder;
 import com.mild.andyou.config.properties.GptKeyProperty;
+import com.mild.andyou.controller.survey.rqrs.ContentDto;
+import com.mild.andyou.controller.survey.rqrs.OptionSaveRq;
+import com.mild.andyou.controller.survey.rqrs.SurveySaveRq;
+import com.mild.andyou.domain.survey.ContentType;
 import com.mild.andyou.domain.survey.Survey;
 import com.mild.andyou.domain.survey.SurveyOption;
+import com.mild.andyou.domain.survey.SurveyType;
+import com.mild.andyou.domain.user.User;
+import com.mild.andyou.utils.ObjectMapperUtils;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
@@ -17,8 +26,11 @@ import org.springframework.web.util.UriComponentsBuilder;
 import reactor.core.publisher.Mono;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
+@Slf4j
 @Transactional(readOnly = true)
 @Service
 @RequiredArgsConstructor
@@ -54,6 +66,86 @@ public class GptService {
         return request(rq);
     }
 
+    public SurveySaveRq createSurvey(Long chainOptionId, Survey survey) {
+        UserContextHolder.setUserContext(new UserContext(new User(survey.getCreatedBy().getId()), "localhost"));
+        String prompt = getCreateSurveyPrompt(chainOptionId, survey);
+        GeminiRq rq = new GeminiRq();
+        rq.addContents(RoleType.USER, prompt);
+        String result = request(rq).replace("```json","").replace("```","");
+        SurveySaveRq newSurveyRq = ObjectMapperUtils.getFromJson(result, SurveySaveRq.class);
+        newSurveyRq.setChainOptionId(chainOptionId);
+        return newSurveyRq;
+    }
+
+    private String getCreateSurveyPrompt(Long chainOptionId, Survey survey) {
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("# 상황\n");
+        sb.append("주어진 '스토리 요약'과 '직전 스토리'를 토대로 앞으로의 내용을 작성해야 함. ");
+        sb.append("내용은 소설체 작성, 글의 주인공은 나(글을 읽는 독자)임. ");
+        sb.append("내용은 해피앤딩, 세드앤딩, 배드엔딩 중 택1 필수. ");
+        sb.append("새로운 시작과 같은 전개는 금지. 결말의 경우 완결섬 필수.\n");
+        if(survey.getTotalSummary() != null) {
+            sb.append("# 스토리 요약\n");
+            sb.append(survey.getTotalSummary()).append("\n");
+        }
+        sb.append("# 직전 스토리\n");
+        sb.append("## 제목\n").append(survey.getTitle()).append("\n");
+        sb.append("## 내용\n").append(survey.getDescription()).append("\n");
+        sb.append("## 주인공의 행동\n").append(survey.getOption(chainOptionId).get().getText()).append("\n");
+        sb.append("# 출력 조건\n");
+        sb.append("아래의 형식으로 응답 필수. 이외의 구조는 에러 발생.\n");
+        sb.append(ObjectMapperUtils.getToJson(getExampleSurveySaveRq(survey)));
+        sb.append("\n");
+        sb.append("내용은 최소 500자 분량으로 작성. ");
+        sb.append("'*'특수문자는 사용 금지. 예외적으로 가독성을 위해 개행은 '\\n'로 처리.");
+        return sb.toString();
+    }
+
+    private SurveySaveRq getExampleSurveySaveRq(Survey survey) {
+        boolean isFinal = ThreadLocalRandom.current().nextDouble() < 0.8;
+
+        List<OptionSaveRq> options = new ArrayList<>();
+        if(isFinal) {
+            options.add(new OptionSaveRq(
+                    "생성된 선택지(결말의 경우 [끝] 한글자 작성)",
+                    new ContentDto(
+                            ContentType.NONE,
+                            null,
+                            null
+                    ),
+                    null,
+                    null
+            ));
+        }else {
+            for(int i=0; i<2; i++) {
+                options.add(new OptionSaveRq(
+                        "생선된 선택지(클라이맥스)",
+                        new ContentDto(
+                                ContentType.NONE,
+                                null,
+                                null
+                        ),
+                        null,
+                        null
+                ));
+            }
+        }
+        String v = (isFinal ? "(결말)" : "(클라이맥스)");
+        SurveySaveRq surveySaveRq = new SurveySaveRq(
+                null,
+                survey.getTopic(),
+                SurveyType.SURVEY,
+                "생성된 제목",
+                "생성된 내용"+v,
+                options,
+                null,
+                "전체 스토리 요약",
+                isFinal
+        );
+        return surveySaveRq;
+    }
+
     public String request(GeminiRq rq) {
         GeminiRs rs = webClient.post()
                 .uri(getGeminiUri())
@@ -73,6 +165,7 @@ public class GptService {
     }
     private URI getGeminiUri() {
         final String MODEL = "gemini-2.0-flash";
+//        final String MODEL = "gemini-2.5-flash-preview-04-17";
         String url = "generativelanguage.googleapis.com";
         String path = "/v1beta/models/"+MODEL+":generateContent";
 
