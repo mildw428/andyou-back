@@ -48,12 +48,16 @@ public class Survey {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
+    private String totalSummary;
+
+    private Boolean isFinal;
+
     private Boolean isDeleted;
 
     @OneToMany(mappedBy = "survey", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<SurveyOption> options = new ArrayList<>();
 
-    public Survey(Topic topic, SurveyType type, String title, String description, User createdBy) {
+    public Survey(Topic topic, SurveyType type, String title, String description, User createdBy, String totalSummary, Boolean isFinal) {
         this.topic = topic;
         this.type = type;
         this.title = title;
@@ -61,12 +65,13 @@ public class Survey {
         this.createdBy = createdBy;
         this.isDeleted = false;
         this.voteCount = 0;
-
+        this.totalSummary = totalSummary;
+        this.isFinal=Boolean.TRUE.equals(isFinal);
     }
 
-    public static Survey create(Topic topic, SurveyType type, String title, String description) {
+    public static Survey create(Topic topic, SurveyType type, String title, String description, String totalSummary, Boolean isFinal) {
         User user = new User(UserContextHolder.userId());
-        return new Survey(topic, type, title, description, user);
+        return new Survey(topic, type, title, description, user, totalSummary, isFinal);
     }
 
     public void update(String title, String description) {
@@ -85,6 +90,12 @@ public class Survey {
     public Optional<SurveyOption> getOption(Long optionId) {
         return options.stream()
                 .filter(option -> option.getId().equals(optionId))
+                .findFirst();
+    }
+
+    public Optional<SurveyOption> getChainedOption(Long chainSurveyId) {
+        return options.stream()
+                .filter(option -> option.getChainSurveyId() != null && option.getChainSurveyId().equals(chainSurveyId))
                 .findFirst();
     }
 

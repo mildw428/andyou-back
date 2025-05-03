@@ -16,7 +16,6 @@ import com.mild.andyou.utils.s3.S3FilePath;
 import com.mild.andyou.utils.s3.S3Utils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -66,7 +65,9 @@ public class SurveyService {
                 rq.getTopic(),
                 rq.getType(),
                 rq.getTitle(),
-                rq.getDescription()
+                rq.getDescription(),
+                rq.getTotalSummary(),
+                rq.getIsFinal()
         );
 
         FeedbackVo incorrectFeedback = rq.getIncorrectFeedback() == null ? null : rq.getIncorrectFeedback().of();
@@ -90,8 +91,10 @@ public class SurveyService {
             }
         }
 
-        List<SurveyContent> surveyContents = surveyContentRepository.findAllByFileNameIn(fileNames);
-        surveyContents.forEach(c->c.updateStatus(survey));
+        if(!fileNames.isEmpty()) {
+            List<SurveyContent> surveyContents = surveyContentRepository.findAllByFileNameIn(fileNames);
+            surveyContents.forEach(c->c.updateStatus(survey));
+        }
 
         if(rq.getChainOptionId() != null) {
             SurveyOption surveyOption = surveyOptionRepository.findById(rq.getChainOptionId()).orElseThrow();
@@ -197,7 +200,7 @@ public class SurveyService {
 
     public PageResponse<SurveySearchRs> searchSurveys(Topic topic, String keyword, SortOrder order, PageRq pageRq) {
 
-        String cacheKey = "survey_page1";
+        String cacheKey = "survey_page1_"+order;
         Page<Survey> surveys;
         Object cached = redisComponent.get(cacheKey, new TypeReference<PageResponse<SurveySearchRs>>() {});
         if (pageRq.getPage().equals(0) && cached != null) {
@@ -237,5 +240,20 @@ public class SurveyService {
     public ChainCandidateOptionsRs chainCandidateOptions(Long id) {
         List<Survey> surveys = surveyRepository.findChainCandidateSurvey(id);
         return ChainCandidateOptionsRs.create(surveys, id);
+    }
+
+    @Transactional
+    public List<Long> saveAISurvey(Long id) {
+        Survey survey = surveyRepository.findById(id).orElseThrow();
+        if(survey.getIsFinal()) {
+            return List.of();
+        }
+        List<Long> newSurveyIds = new ArrayList<>();
+        for (SurveyOption option : survey.getOptions()) {
+            if(option.getChainSurveyId() != null) continue;
+            SurveySaveRs rs = saveSurvey(gptService.createSurvey(option.getId(), survey));
+            newSurveyIds.add(rs.getId());
+        }
+        return newSurveyIds;
     }
 }
