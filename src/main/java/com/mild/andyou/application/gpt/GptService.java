@@ -75,6 +75,7 @@ public class GptService {
         SurveySaveRq newSurveyRq = ObjectMapperUtils.getFromJson(result, SurveySaveRq.class);
         newSurveyRq.setChainOptionId(chainOptionId);
         newSurveyRq.setTopic(survey.getTopic());
+        newSurveyRq.setType(survey.getType());
         return newSurveyRq;
     }
 
@@ -135,8 +136,8 @@ public class GptService {
         String v = (isFinal ? "(결말)" : "(클라이맥스)");
         SurveySaveRq surveySaveRq = new SurveySaveRq(
                 null,
-                survey.getTopic(),
-                SurveyType.SURVEY,
+                null,
+                null,
                 "생성된 제목",
                 "생성된 내용"+v,
                 options,
