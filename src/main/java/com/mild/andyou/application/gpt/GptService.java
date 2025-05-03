@@ -74,6 +74,7 @@ public class GptService {
         String result = request(rq).replace("```json","").replace("```","");
         SurveySaveRq newSurveyRq = ObjectMapperUtils.getFromJson(result, SurveySaveRq.class);
         newSurveyRq.setChainOptionId(chainOptionId);
+        newSurveyRq.setTopic(survey.getTopic());
         return newSurveyRq;
     }
 
